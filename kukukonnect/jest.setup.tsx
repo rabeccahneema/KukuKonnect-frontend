@@ -1,3 +1,4 @@
+// import '@testing-library/jest-DOMException';
 import "@testing-library/jest-dom";
 import 'jest-canvas-mock';
 class ResizeObserver {
@@ -10,3 +11,6 @@ Object.defineProperty(window, 'ResizeObserver', {
   configurable: true,
   value: ResizeObserver,
 });
+
+
+

@@ -1,8 +1,13 @@
+
 {
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "types": [
+      "@testing-library/jest-dom",
+      "jest"
+    ],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -22,10 +27,9 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "setupTests.js"],
-  "exclude": ["node_modules"],
-  "types": ["jest", "@testing-library/jest-dom"],
-  
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/verify-otp/page.test.tsx"],
+  "exclude": ["node_modules"]
+
 }
 
 
