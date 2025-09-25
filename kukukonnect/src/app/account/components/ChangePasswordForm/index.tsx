@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface ChangePasswordFormProps {
   email: string;
   onCancel: () => void;
-  updatePassword: (email: string, newPassword: string) => Promise<void>;
+  setPasswordFn: (email: string, newPassword: string) => Promise<any>;
   loading: boolean;
   error: string | null;
   onSuccess: () => void;
@@ -16,32 +16,60 @@ interface ChangePasswordFormProps {
 export default function ChangePasswordForm({
   email,
   onCancel,
-  updatePassword,
+  setPasswordFn,
   loading,
   error,
-  onSuccess
+  onSuccess,
 }: ChangePasswordFormProps) {
-  const [form, setForm] = useState({ email, newPassword: "", confirmPassword: "" });
+  const [form, setForm] = useState({ email, newPassword: '', confirmPassword: '' });
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
     setLocalError(null);
+
+    if (name === 'confirmPassword') {
+      if (value && value !== form.newPassword) {
+        setPasswordMismatch(true);
+      } else {
+        setPasswordMismatch(false);
+      }
+    }
   };
+
+  useEffect(() => {
+    if (form.confirmPassword && form.newPassword !== form.confirmPassword) {
+      setPasswordMismatch(true);
+    } else {
+      setPasswordMismatch(false);
+    }
+  }, [form.newPassword, form.confirmPassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLocalError(null);
+
     if (!form.email) {
-      setLocalError("Email is required.");
+      setLocalError('Email is required.');
       return;
     }
+
     if (form.newPassword !== form.confirmPassword) {
-      setLocalError("New passwords do not match.");
+      setLocalError('New passwords do not match.');
       return;
     }
-    await updatePassword(form.email, form.newPassword);
+
+    try {
+      const result = await setPasswordFn(form.email, form.newPassword);
+      if (result) {
+        onSuccess();
+      }
+    } catch (err) {
+    }
   };
 
   return (
@@ -58,83 +86,99 @@ export default function ChangePasswordForm({
           </h2>
           <div className="space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-10 2xl:space-y-10 w-full max-w-xl">
             <div className="relative">
-              <label className="block text-sm sm:text-base md:text-base lg:text-base 2xl:text-base font-semibold text-[#0B2C27] mb-2">Email</label>
+              <label htmlFor="email" className="block text-sm sm:text-base md:text-base lg:text-base 2xl:text-base font-semibold text-[#0B2C27] mb-2">
+                Email
+              </label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full border border-[#D2914A]/50 rounded-lg px-4 sm:px-5 md:px-5 lg:px-5 2xl:px-5 py-2 sm:py-3 md:py-3 lg:py-3 2xl:py-3 text-sm sm:text-base md:text-base lg:text-base 2xl:text-base focus:outline-none focus:ring-0 focus:border-2 focus:border-[#D2914A] transition-colors duration-200"
+                className="w-full border border-[#D2914A]/50 rounded-lg px-4 sm:px-5 py-2 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-0 focus:border-2 focus:border-[#D2914A] transition-colors duration-200"
                 autoComplete="email"
                 required
               />
             </div>
+
             <div className="relative">
-              <label className="block text-sm sm:text-base md:text-base lg:text-base 2xl:text-base font-semibold text-[#0B2C27] mb-2">New Password</label>
+              <label htmlFor="newPassword" className="block text-sm sm:text-base md:text-base lg:text-base 2xl:text-base font-semibold text-[#0B2C27] mb-2">
+                New Password
+              </label>
               <div className="relative flex items-center">
                 <input
-                  type={showNewPassword ? "text" : "password"}
+                  id="newPassword"
+                  type={showNewPassword ? 'text' : 'password'}
                   name="newPassword"
                   value={form.newPassword}
                   onChange={handleChange}
-                  className="w-full border border-[#D2914A]/50 rounded-lg px-4 sm:px-5 md:px-5 lg:px-5 2xl:px-5 py-2 sm:py-3 md:py-3 lg:py-3 2xl:py-3 text-sm sm:text-base md:text-base lg:text-base 2xl:text-base focus:outline-none focus:ring-0 focus:border-2 focus:border-[#D2914A] transition-colors duration-200"
+                  className="w-full border border-[#D2914A]/50 rounded-lg px-4 sm:px-5 py-2 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-0 focus:border-2 focus:border-[#D2914A] transition-colors duration-200"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
-                  aria-label={showNewPassword ? "Hide password" : "Show password"}
+                  aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowNewPassword(!showNewPassword)}
                   className="absolute right-4 inset-y-0 flex items-center text-[#0B2C27] hover:text-[#D2914A] transition p-1 cursor-pointer"
                   tabIndex={-1}
                 >
-                  {showNewPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+                  {showNewPassword ? <Eye size={22} /> : <EyeOff size={22} />}
                 </button>
               </div>
             </div>
+
             <div className="relative">
-              <label className="block text-sm sm:text-base md:text-base lg:text-base 2xl:text-base font-semibold text-[#0B2C27] mb-2">Confirm New Password</label>
+              <label htmlFor="confirmPassword" className="block text-sm sm:text-base md:text-base lg:text-base 2xl:text-base font-semibold text-[#0B2C27] mb-2">
+                Confirm New Password
+              </label>
               <div className="relative flex items-center">
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  className="w-full border border-[#D2914A]/50 rounded-lg px-4 sm:px-5 md:px-5 lg:px-5 2xl:px-5 py-2 sm:py-3 md:py-3 lg:py-3 2xl:py-3 text-sm sm:text-base md:text-base lg:text-base 2xl:text-base focus:outline-none focus:ring-0 focus:border-2 focus:border-[#D2914A] transition-colors duration-200"
+                  className="w-full border border-[#D2914A]/50 rounded-lg px-4 sm:px-5 py-2 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-0 focus:border-2 focus:border-[#D2914A] transition-colors duration-200"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-4 inset-y-0 flex items-center text-[#0B2C27] hover:text-[#D2914A] transition p-1 cursor-pointer"
                   tabIndex={-1}
                 >
-                  {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+                  {showConfirmPassword ? <Eye size={22} /> : <EyeOff size={22} />}
                 </button>
               </div>
             </div>
-            {localError && <p className="text-center text-sm sm:text-base md:text-base lg:text-base 2xl:text-base text-red-600">{localError}</p>}
-            {error && <p className="text-center text-sm sm:text-base md:text-base lg:text-base 2xl:text-base text-red-600">{error}</p>}
+
+            {(localError || passwordMismatch) && (
+              <p className="text-center text-sm sm:text-base text-red-600">
+                {localError || 'Passwords do not match.'}
+              </p>
+            )}
+            {error && <p className="text-center text-sm sm:text-base text-red-600">{error}</p>}
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row justify-center sm:justify-end space-y-4 sm:space-x-4 sm:space-y-0 mt-6 sm:mt-8 md:mt-10 lg:mt-10 2xl:mt-10 border-b-0">
+
+        <div className="flex flex-col sm:flex-row justify-center sm:justify-end space-y-4 sm:space-x-4 sm:space-y-0 mt-6 sm:mt-8 md:mt-10">
           <button
-            onClick={onCancel}
             type="button"
-            className="px-6 sm:px-8 md:px-8 lg:px-8 2xl:px-8 py-2 sm:py-3 md:py-3 lg:py-3 2xl:py-3 cursor-pointer bg-white text-[#0B2C27] border-2 border-[#D2914A] rounded-lg font-semibold hover:bg-[#F5F0E6] transition-colors duration-200"
+            onClick={onCancel}
+            className="px-6 sm:px-8 py-2 sm:py-3 cursor-pointer bg-white text-[#0B2C27] border-2 border-[#D2914A] rounded-lg font-semibold hover:bg-[#F5F0E6] transition-colors duration-200"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-6 sm:px-8 md:px-8 lg:px-8 2xl:px-8 py-2 sm:py-3 md:py-3 lg:py-3 2xl:py-3 bg-[#D2914A] text-white rounded-lg cursor-pointer font-semibold hover:bg-[#B87E40] transition-colors duration-200"
+            className="px-6 sm:px-8 py-2 sm:py-3 bg-[#D2914A] text-white rounded-lg cursor-pointer font-semibold hover:bg-[#B87E40] transition-colors duration-200"
           >
-            {loading ? "Changing..." : "Change Password"}
+            {loading ? 'Changing...' : 'Change Password'}
           </button>
         </div>
       </form>
     </motion.div>
   );
 }
-

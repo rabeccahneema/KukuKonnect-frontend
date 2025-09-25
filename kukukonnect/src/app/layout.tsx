@@ -1,11 +1,12 @@
+import type { Metadata } from "next";
 import "./globals.css";
 import { Nunito } from "next/font/google";
 
-const nunito = Nunito({ subsets: ['latin'], weight: ["400", "700", "900"], variable: "--font-nunito" });
+const nunito = Nunito({ subsets: ['latin'], weight: ["400", "600", "700", "900"], variable: "--font-nunito" });
 
-export const metadata = {
-  title: "KukuKonnect Account",
-  description: "Account pages for KukuKonnect App",
+export const metadata: Metadata = {
+  title: "KukuKonnect",
+  description: "KukuKonnect dashboard",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

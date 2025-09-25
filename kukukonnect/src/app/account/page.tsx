@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import useFetchUser from "../hooks/useFetchUser";
 import useUpdateUser from "../hooks/useUpdateUser";
 import useDeleteUser from "../hooks/useDeleteUser";
-import useSetPassword from "../hooks/useSetPassword";
+import useSetPassword from "../hooks/useSetPassword"; 
 import { useRouter } from "next/navigation";
 import AccountNav from "./components/AccountNav";
 import ProfileForm from "./components/ProfileForm";
@@ -14,7 +14,8 @@ import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 
 const getUserId = () => {
-  return 3; 
+  const storedUser = localStorage.getItem("user");
+  return storedUser ? JSON.parse(storedUser).id : null;
 };
 
 export default function AccountSettingsPage() {
@@ -26,64 +27,56 @@ export default function AccountSettingsPage() {
 
   const userId = getUserId();
   if (!userId) {
-    router.push("/login");
+    router.push("/");
     return null;
   }
 
   const { user, loading, error } = useFetchUser(userId);
   const { update, loading: editSaving, error: editError, success: editSuccess } = useUpdateUser();
   const { remove, loading: deleteLoading, error: deleteError, success: deleteSuccess } = useDeleteUser();
-  const { updatePassword, loading: pwdLoading, error: pwdError, success: pwdSuccess } = useSetPassword();
+  
+  const { SetPassword, loading: pwdLoading, error: pwdError } = useSetPassword();
 
   useEffect(() => {
     if (editSuccess) {
       setShowSuccessPopup(true);
-      const timer = setTimeout(() => {
-        setShowSuccessPopup(false);
-      }, 2000);
+      const timer = setTimeout(() => setShowSuccessPopup(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [editSuccess]);
 
   useEffect(() => {
-    if (pwdSuccess) {
-      setShowPwdSuccessPopup(true);
-      const timer = setTimeout(() => {
-        setShowPwdSuccessPopup(false);
-      }, 2000);
+    if (showPwdSuccessPopup) {
+      const timer = setTimeout(() => setShowPwdSuccessPopup(false), 2000);
       return () => clearTimeout(timer);
     }
-  }, [pwdSuccess]);
+  }, [showPwdSuccessPopup]);
 
   useEffect(() => {
     if (deleteSuccess) {
-      const timer = setTimeout(() => {
-        router.push("/login");
-      }, 1500);
+      const timer = setTimeout(() => router.push("/"), 1500);
       return () => clearTimeout(timer);
     }
   }, [deleteSuccess, router]);
 
-  const handleSave = async (form: any) => { // ✅ Removed file parameter
+  const handleSave = async (form: any, file: File | null) => {
     if (!userId || !user) return;
-
     const userData = {
       first_name: form.firstName,
       last_name: form.lastName,
       email: form.email,
       phone_number: form.phoneNumber,
       username: form.username,
-      mcu_device_id: form.deviceId,
       user_type: user.user_type,
-      image: form.profileImage, // ✅ Send image URL
     };
-
-    await update(userId, userData);
+    await update(userId, userData, file);
   };
 
   const handleDeleteAccount = async () => {
     await remove(userId);
   };
+
+  const showPasswordTab = user?.user_type === 'Farmer';
 
   return (
     <div className="flex-1 flex flex-col p-12 bg-gray-100 items-center">
@@ -93,6 +86,7 @@ export default function AccountSettingsPage() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         setShowDeleteConfirm={setShowDeleteConfirm}
+        showPasswordTab={showPasswordTab}
       />
 
       <div className="flex-grow flex items-center justify-center overflow-y-auto w-[90%]">
@@ -103,21 +97,23 @@ export default function AccountSettingsPage() {
         ) : activeTab === 'edit-profile' ? (
           <ProfileForm
             user={user}
-            onSave={handleSave} // ✅ No file parameter
+            onSave={handleSave}
             saving={editSaving}
             error={editError}
-            onSuccess={() => {}} 
+            onSuccess={() => {}}
           />
-        ) : activeTab === 'change-password' ? (
+        ) : activeTab === 'change-password' && showPasswordTab ? (
           <ChangePasswordForm
             email={user?.email || ""}
             onCancel={() => setActiveTab('edit-profile')}
-            updatePassword={updatePassword}
+            setPasswordFn={SetPassword}
             loading={pwdLoading}
             error={pwdError}
-            onSuccess={() => {}} 
+            onSuccess={() => setShowPwdSuccessPopup(true)} 
           />
-        ) : null}
+        ) : (
+          <div className="text-center text-xl text-red-700">Access denied</div>
+        )}
       </div>
 
       <DeleteConfirmationModal

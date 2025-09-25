@@ -7,5 +7,5 @@ export interface UserType {
   email: string;
   user_type: string;
   image: string | null;
-  mcu_device_id: string;
+  device_id: string;
 }

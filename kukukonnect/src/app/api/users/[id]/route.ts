@@ -29,36 +29,39 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const authHeader = request.headers.get("Authorization");
     if (!authHeader) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const body = await request.json();
     const { id } = await params;
+
+    const formData = await request.formData();
 
     const response = await fetch(`${baseurl}/users/${id}/`, {
       method: "PUT",
       headers: {
         Authorization: authHeader,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: formData,
     });
+
+    if (!response.ok) {
+      throw new Error(`Something went wrong: ${response.status} ${response.statusText}`);
+    }
 
     const result = await response.json();
-
-    return new Response(JSON.stringify(result), {
-      status: 200,
-    });
+    return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
-    return new Response((error as Error).message, {
-      status: 500,
-    });
+    return new Response((error as Error).message, { status: 500 });
   }
 }
+
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

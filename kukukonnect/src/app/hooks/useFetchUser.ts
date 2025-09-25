@@ -9,10 +9,6 @@ const useFetchUser = (userId: number) => {
 
   useEffect(() => {
     (async () => {
-      const Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0OTEyMTQ0MzcyLCJpYXQiOjE3NTg1NDQzNzIsImp0aSI6IjM4MzE2ZDMwZWNhNzQ3YTA4MDA2MDgwZjk1MTUzYjc2IiwidXNlcl9pZCI6M30.FrWDaCSwCfuGBLNlu7PRvL76zsMRPFI_4EIqNdcjuc4";
-      
-      localStorage.setItem("token", Token);
-
       try {
         const userData = await fetchUser(userId);
         setUser(userData);
