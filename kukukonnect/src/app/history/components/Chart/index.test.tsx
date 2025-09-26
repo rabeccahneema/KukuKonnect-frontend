@@ -2,9 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import HistoryBarChart from "./index";
-import useFetchHistory from "@/app/hooks/useFetchHistory";
-
-
+import useFetchHistory from "../../../hooks/useFetchHistory";
 jest.mock("recharts", () => ({
   __esModule: true,
   ResponsiveContainer: ({ children }: any) => <div data-testid="ResponsiveContainer">{children}</div>,
@@ -15,7 +13,6 @@ jest.mock("recharts", () => ({
   Tooltip: () => <div data-testid="Tooltip" />,
   Bar: () => <div data-testid="Bar" />,
 }));
-
 jest.mock("react-datepicker", () => (props: any) => (
   <input
     data-testid="date-picker"
@@ -24,16 +21,11 @@ jest.mock("react-datepicker", () => (props: any) => (
     placeholder={props.placeholderText}
   />
 ));
-
-
 jest.mock("../List", () => () => <div data-testid="history-table">List Table</div>);
-
-jest.mock("@/app/hooks/useFetchHistory", () => ({
+jest.mock("../../../hooks/useFetchHistory", () => ({ 
   __esModule: true,
   default: jest.fn(),
 }));
-
-
 describe("HistoryBarChart", () => {
   const mockHistory = [
     {
@@ -52,7 +44,6 @@ describe("HistoryBarChart", () => {
       humidity: 65,
     },
   ];
-
   beforeEach(() => {
     (useFetchHistory as jest.Mock).mockReturnValue({
       history: mockHistory,
@@ -60,11 +51,9 @@ describe("HistoryBarChart", () => {
       error: null,
     });
   });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
-
   it("renders the main headings (h1 and both h2s)", () => {
     render(<HistoryBarChart />);
     expect(
@@ -77,19 +66,16 @@ describe("HistoryBarChart", () => {
       screen.getByRole("heading", { name: /^Humidity$/, level: 2 })
     ).toBeInTheDocument();
   });
-
   it("renders the Graph view by default with chart containers", () => {
     render(<HistoryBarChart />);
     expect(screen.getAllByTestId("ResponsiveContainer").length).toBe(2);
     expect(screen.getAllByTestId("BarChart").length).toBe(2);
   });
-
   it("switches to List view when List button is clicked", () => {
     render(<HistoryBarChart />);
     fireEvent.click(screen.getByRole("button", { name: /List/i }));
     expect(screen.getByTestId("history-table")).toBeInTheDocument();
   });
-
   it("switches back to Graph view when Graph button is clicked again", () => {
     render(<HistoryBarChart />);
     fireEvent.click(screen.getByRole("button", { name: /List/i }));
@@ -101,12 +87,10 @@ describe("HistoryBarChart", () => {
       screen.getByRole("heading", { name: /^Humidity$/, level: 2 })
     ).toBeInTheDocument();
   });
-
   it("renders the date picker with correct placeholder", () => {
     render(<HistoryBarChart />);
     expect(screen.getByPlaceholderText("Select date")).toBeInTheDocument();
   });
-
   it("filters data when a date is selected", async () => {
     render(<HistoryBarChart />);
     const dateInput = screen.getByTestId("date-picker");
@@ -115,12 +99,18 @@ describe("HistoryBarChart", () => {
       expect(screen.getByRole("heading", { name: /^Temperature$/, level: 2 })).toBeInTheDocument();
     });
   });
-
   it("renders both chart bars and axis labels for weekdays", () => {
     render(<HistoryBarChart />);
     expect(screen.getAllByTestId("XAxis").length).toBe(2);
     expect(screen.getAllByTestId("YAxis").length).toBe(2);
   });
 });
+
+
+
+
+
+
+
 
 

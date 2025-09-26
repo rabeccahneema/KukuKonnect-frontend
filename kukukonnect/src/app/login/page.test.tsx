@@ -69,7 +69,7 @@ describe("Login Component", () => {
     expect(screen.getByRole("button", { name: /Logging In.../i })).toBeDisabled();
   });
 
-  it("calls login and redirects to farmer dashboard", async () => {
+  it("calls login and redirects to dashboard for Farmer", async () => {
     jest.useFakeTimers();
     mockLogin.mockResolvedValueOnce({ user: { user_type: "Farmer" } });
     render(<Login />);
@@ -78,12 +78,12 @@ describe("Login Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Log In/i }));
     jest.advanceTimersByTime(100);
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/farmer-dashboard");
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
     jest.useRealTimers();
   });
 
-  it("calls login and redirects to agrovet dashboard", async () => {
+  it("calls login and redirects to users for Agrovet", async () => {
     jest.useFakeTimers();
     mockLogin.mockResolvedValueOnce({ user: { user_type: "Agrovet" } });
     render(<Login />);
@@ -92,7 +92,7 @@ describe("Login Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Log In/i }));
     jest.advanceTimersByTime(100);
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/agrovet-dashboard");
+      expect(mockPush).toHaveBeenCalledWith("/users");
     });
     jest.useRealTimers();
   });

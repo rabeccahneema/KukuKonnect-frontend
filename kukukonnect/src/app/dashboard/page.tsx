@@ -6,25 +6,26 @@ import InfoCard from "./component/Infocard";
 import TemperatureModal from "./component/Temperature-modal";
 import ChartsSection from "./component/Graphs";
 import { updateThresholds as updateThresholdsApi } from "../utils/fetchThresholds";
+import FarmerLayout from "../shared-components/FarmerLayout";
+
 
 type TempData = { time: string; temp: number | null };
 type HumidityData = { time: string; hum: number | null };
 
+
 export default function Dashboard() {
   const { sensors = [], loading, error } = useFetchSensors();
   const { thresholds = [], loading: thresholdsLoading, error: thresholdsError } = useFetchThresholds();
-
   const [tempData, setTempData] = useState<TempData[]>([]);
   const [humidityData, setHumidityData] = useState<HumidityData[]>([]);
   const [currentTemp, setCurrentTemp] = useState<number | null>(null);
   const [currentHumidity, setCurrentHumidity] = useState<number | null>(null);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [optimumRange, setOptimumRange] = useState<[number, number] | null>(null);
   const [minTemp, setMinTemp] = useState<number | null>(null);
   const [maxTemp, setMaxTemp] = useState<number | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
     const tempArr: TempData[] = hours.map(hr => {
@@ -37,7 +38,6 @@ export default function Dashboard() {
         temp: item ? Number(item.temperature) : null
       };
     });
-
     const humArr: HumidityData[] = hours.map(hr => {
       const item = sensors.find(s => {
         const date = new Date(s.timestamp);
@@ -48,16 +48,15 @@ export default function Dashboard() {
         hum: item ? Number(item.humidity) : null
       };
     });
-
     setTempData(tempArr);
     setHumidityData(humArr);
-
     if (sensors.length) {
       const latestSensor = sensors[sensors.length - 1];
       setCurrentTemp(Number(latestSensor.temperature));
       setCurrentHumidity(Number(latestSensor.humidity));
     }
   }, [sensors]);
+
 
   useEffect(() => {
     if (thresholds.length > 0) {
@@ -71,6 +70,7 @@ export default function Dashboard() {
     }
   }, [thresholds]);
 
+
   useEffect(() => {
     if (optimumRange) {
       setMinTemp(optimumRange[0]);
@@ -78,34 +78,37 @@ export default function Dashboard() {
     }
   }, [optimumRange]);
 
+
   const chartHeight = 350;
   const chartBoxMinHeight = "min-h-[340px] xl:min-h-[540px]";
+
 
   async function updateThresholds(deviceId: string, minTemp: number, maxTemp: number) {
     const humidityMin = thresholds[0]?.humidity_threshold_min ?? "40.00";
     const humidityMax = thresholds[0]?.humidity_threshold_max ?? "70.00";
-
     await updateThresholdsApi({
       device_id: deviceId,
-      temp_threshold_min: minTemp.toFixed(2), 
+      temp_threshold_min: minTemp.toFixed(2),
       temp_threshold_max: maxTemp.toFixed(2),
       humidity_threshold_min: humidityMin,
       humidity_threshold_max: humidityMax,
     });
   }
+
+
   const handleConfirm = async (enteredDeviceId: string, newMinTemp: number, newMaxTemp: number) => {
     try {
       await updateThresholds(enteredDeviceId, newMinTemp, newMaxTemp);
       setOptimumRange([newMinTemp, newMaxTemp]);
-
     } catch (error: any) {
       alert(`Failed to update temperature thresholds: ${error.message}`);
     }
   };
 
+
   return (
-    <div className="flex min-h-screen bg-white relative">
-      <main className="flex-1 px-2 xl:px-8 max-w-full xl:max-w-7xl mx-auto relative">
+    <FarmerLayout>
+      <div className="max-w-full xl:max-w-7xl mx-auto relative">
         <h1 className="font-semibold text-emerald-900 mb-10 mt-12 text-xl xl:text-3xl leading-7 xl:leading-9 px-2 xl:px-0 text-center">
           Current Temperature and Humidity
         </h1>
@@ -127,7 +130,6 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <ChartsSection
             title="Hourly Temperature"
@@ -170,7 +172,7 @@ export default function Dashboard() {
           />
         )}
         <div className="h-16 xl:h-0" />
-      </main>
-    </div>
+      </div>
+    </FarmerLayout>
   );
 }

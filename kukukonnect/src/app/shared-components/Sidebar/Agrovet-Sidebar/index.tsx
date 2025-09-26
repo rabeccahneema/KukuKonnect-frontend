@@ -18,7 +18,7 @@ export default function Sidebar() {
   const pathname = usePathname();
  return (
       <>
-        <div className="fixed inset-0 overflow-hidden">
+        <div className="fixed inset-0 w-43 overflow-hidden">
           <div className="hidden lg:flex fixed top-0 left-0 flex-col w-64 bg-[#084236] text-white h-screen p-4">
             <div className="Logo mb-6 flex justify-center">
               <Image

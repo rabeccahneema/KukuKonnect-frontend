@@ -10,6 +10,7 @@ import {
 } from "recharts";
 
 import { ChartSectionProps } from "@/app/utils/types/graphs";
+
 export default function ChartsSection({
   title,
   data,
@@ -17,7 +18,6 @@ export default function ChartsSection({
   yLabel,
   yDomain,
   yTicks,
-  gradientId,
   gradientColor,
   chartHeight,
   chartBoxMinHeight,
@@ -27,17 +27,11 @@ export default function ChartsSection({
     <section className={`bg-white rounded-2xl shadow-lg ${chartBoxMinHeight} flex flex-col justify-center p-4 w-full`}>
       <h2 className="text-xl text-emerald-900 font-semibold mb-6 text-center">{title}</h2>
       <div className="w-full" style={{ height: chartHeight }}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="80%">
           <AreaChart
             data={data}
             margin={{ top: 30, right: 30, left: 0, bottom: 45 }}
           >
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={gradientColor} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={gradientColor} stopOpacity={0} />
-              </linearGradient>
-            </defs>
             <XAxis
               dataKey="time"
               label={{
@@ -73,8 +67,8 @@ export default function ChartsSection({
               type="monotone"
               dataKey={dataKey}
               stroke={gradientColor}
+              fill={gradientColor}
               fillOpacity={1}
-              fill={`url(#${gradientId})`}
               connectNulls
             />
           </AreaChart>

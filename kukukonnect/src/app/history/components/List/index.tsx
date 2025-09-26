@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import useFetchHistory from '@/app/hooks/useFetchHistory';
+import useFetchHistory from '../../../hooks/useFetchHistory';
 import 'react-datepicker/dist/react-datepicker.css';
-import { HistoryType } from '@/app/hooks/useFetchHistory';
+import { HistoryType } from '../../../hooks/useFetchHistory';
 
 function getAverage(history: HistoryType[], selectedDate: Date | null) {
     const dayRecords: { [key: string]: { temps: number[]; hums: number[] } } = {};
@@ -18,7 +18,7 @@ function getAverage(history: HistoryType[], selectedDate: Date | null) {
 
     filtered.forEach(item => {
         const date = new Date(item.timestamp);
-        const formattedDate = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`; 
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
         if (!dayRecords[formattedDate]) {
             dayRecords[formattedDate] = { temps: [], hums: [] };
@@ -44,23 +44,22 @@ function getAverage(history: HistoryType[], selectedDate: Date | null) {
             ? +(hums.reduce((a, b) => a + b, 0) / hums.length).toFixed(2)
             : null;
 
-        return { date, temperature: avgTemp, humidity: avgHum }; 
+        return { date, temperature: avgTemp, humidity: avgHum };
     });
 }
 
 export default function HistoryTable() {
     const { history, loading, error } = useFetchHistory();
     const [currentPage, setCurrentPage] = useState(1);
-    const selectedDate = null; 
+    const selectedDate = null;
     const averages = getAverage(history, selectedDate);
-    const pageSize = 6; 
+    const pageSize = 6;
     const totalPages = Math.max(1, Math.ceil(averages.length / pageSize));
-   
+
     const currentAverages = averages.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize
     );
-    
 
     const prevPage = () => setCurrentPage(page => Math.max(page - 1, 1));
     const nextPage = () => setCurrentPage(page => Math.min(page + 1, totalPages));
@@ -72,17 +71,17 @@ export default function HistoryTable() {
     }, [averages, currentPage, totalPages]);
 
     return (
-        <div className="history-table-container bg-[#FFFFFF] mx-auto flex-1 p-2 rounded-xl shadow-lg">
+        <div className="history-table-container bg-[#FFFFFF] mx-auto flex-1 rounded-xl shadow-lg -mt-3 pr-20">
             {loading && <div className="text-center text-gray-500">Loading history data...</div>}
             {error && <div className="text-center text-red-600">{error}</div>}
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto ">
                 <table className="min-w-full border-collapse table-fixed">
                     <thead>
-                        <tr className="bg-[#D2914A] text-white text-center text-lg md:text-2xl">
-                            <th className="p-3 md:p-5 border min-w-[180px] md:min-w-[250px]">Date</th>
-                            <th className="p-3 md:p-5 border min-w-[180px] md:min-w-[250px]">Temperature</th>
-                            <th className="p-3 md:p-5 border min-w-[180px] md:min-w-[250px]">Humidity</th>
+                        <tr className="bg-[#D2914A] text-white text-center text-lg md:text-1xl ">
+                            <th className="p-3 md:p-5 border min-w-[150px] md:min-w-[200px]">Date</th>
+                            <th className="p-3 md:p-5 border min-w-[150px] md:min-w-[200px]">Temperature</th>
+                            <th className="p-3 md:p-5 border min-w-[150px] md:min-w-[200px]">Humidity</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,8 +97,7 @@ export default function HistoryTable() {
                                     </td>
                                 </tr>
                             ))
-                        ) : null
-                        }
+                        ) : null}
                     </tbody>
                 </table>
             </div>

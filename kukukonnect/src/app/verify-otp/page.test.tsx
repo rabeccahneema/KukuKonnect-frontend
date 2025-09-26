@@ -1,9 +1,15 @@
 jest.setTimeout(15000);
 
-(useVerifyOtp as jest.Mock).mockImplementation(() => ({
-  verify: jest.fn(),
-  loading: false,
-}));
+jest.mock("../hooks/useVerifyOtp", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => ({
+      verify: jest.fn(),
+      loading: false,
+    })),
+  };
+});
+
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -13,14 +19,10 @@ jest.mock("next/navigation", () => ({
     back: jest.fn(),
   }),
 }));
+
+import useVerifyOtp from "../hooks/useVerifyOtp";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import OtpVerificationPage from "./page";
-
-jest.mock("../hooks/useVerifyOtp", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-import useVerifyOtp from "../hooks/useVerifyOtp";
 
 describe("OtpVerificationPage", () => {
   beforeEach(() => {
@@ -56,6 +58,7 @@ describe("OtpVerificationPage", () => {
       verify: mockVerify,
       loading: false,
     }));
+
     render(<OtpVerificationPage />);
     const inputs = screen.getAllByRole("textbox");
     inputs.forEach((input, i) => {
@@ -68,16 +71,15 @@ describe("OtpVerificationPage", () => {
   });
 
   it("shows success message and redirects on valid OTP", async () => {
-    const mockVerify = jest
-      .fn()
-      .mockResolvedValue({
-        success: true,
-        message: "OTP verified successfully.",
-      });
+    const mockVerify = jest.fn().mockResolvedValue({
+      success: true,
+      message: "OTP verified successfully.",
+    });
     (useVerifyOtp as jest.Mock).mockImplementation(() => ({
       verify: mockVerify,
       loading: false,
     }));
+
     render(<OtpVerificationPage />);
     const inputs = screen.getAllByRole("textbox");
     inputs.forEach((input, i) => {
@@ -97,13 +99,12 @@ describe("OtpVerificationPage", () => {
   });
 
   it("shows error message for invalid OTP", async () => {
-    const mockVerify = jest
-      .fn()
-      .mockResolvedValue({ error: "Invalid or expired OTP" });
+    const mockVerify = jest.fn().mockResolvedValue({ error: "Invalid or expired OTP" });
     (useVerifyOtp as jest.Mock).mockImplementation(() => ({
       verify: mockVerify,
       loading: false,
     }));
+
     render(<OtpVerificationPage />);
     const inputs = screen.getAllByRole("textbox");
     inputs.forEach((input, i) => {
@@ -124,6 +125,7 @@ describe("OtpVerificationPage", () => {
       verify: jest.fn().mockResolvedValue(undefined),
       loading: false,
     }));
+
     render(<OtpVerificationPage />);
     const inputs = screen.getAllByRole("textbox");
     inputs.forEach((input, i) =>
