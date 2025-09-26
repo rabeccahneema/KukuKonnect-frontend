@@ -12,8 +12,10 @@ jest.mock('../hooks/useDeleteUser');
 jest.mock('../hooks/useSetPassword');
 
 const mockPush = jest.fn();
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
+  usePathname: jest.fn().mockReturnValue('/'),
 }));
 
 const localStorageMock = (() => {

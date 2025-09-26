@@ -100,7 +100,6 @@ export default function forgotPassword() {
 
             <div>
               
-        
             </div>
             {error && (
               <p className="text-sm font-medium text-red-600">{error}</p>

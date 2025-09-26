@@ -1,11 +1,13 @@
-import WelcomeScreen from "./welcome/page";
+'use client'
+import WelcomeScreen from "./welcome/page"
 
 
 export default function Home() {
-  return (
-    <div>
-    <WelcomeScreen />;
-      
-    </div>
-   );
-}
+  return(
+  <div>
+   <WelcomeScreen />;
+  </div>
+
+  )
+  
+}    

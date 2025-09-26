@@ -47,7 +47,7 @@ export default function Login() {
       const result = await login(email, password);
       if (result && result.user) {
         setTimeout(() => {
-          router.push(result.user.user_type === "Farmer" ? "/farmer-dashboard" : "/agrovet-dashboard");
+          router.push(result.user.user_type === "Farmer" ? "/dashboard" : "/users");
         }, 100);
       } else if (result && result.error) {
         setError(result.error);

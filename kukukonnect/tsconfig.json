@@ -27,7 +27,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/verify-otp/page.test.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/verify-otp/page.test.tsx", "next.config.js"],
   "exclude": ["node_modules"]
 
 }

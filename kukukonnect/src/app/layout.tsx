@@ -11,7 +11,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={nunito.variable}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#F59E42" />
+      </head>
       <body className="font-nunito bg-[#F7F9FA]">{children}</body>
+      
     </html>
+
+
+
   );
 }
