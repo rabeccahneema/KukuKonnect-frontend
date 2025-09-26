@@ -6,6 +6,14 @@ const nunito = Nunito({ subsets: ['latin'], weight: ["400", "700", "900"], varia
 export const metadata: Metadata = {
   title: "KukuKonnect",
   description: "KukuKonnect dashboard",
+    generator: "Next.js",
+  manifest: "/manifest.json",
+  keywords: ["nextjs", "next15", "pwa", "next-pwa"],
+  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#fff" }],
+  viewport:
+    "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
+  icons: [
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
