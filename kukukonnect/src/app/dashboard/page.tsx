@@ -109,7 +109,7 @@ export default function Dashboard() {
   return (
     <FarmerLayout>
       <div className="max-w-full xl:max-w-7xl mx-auto relative">
-        <h1 className="font-semibold text-emerald-900 mb-10 mt-12 text-xl xl:text-3xl leading-7 xl:leading-9 px-2 xl:px-0 text-center">
+        <h1 className="font-semibold mb-10 mt-12 text-xl lg:text-5xl text-[#084236]  leading-7 xl:leading-9 px-2 xl:px-0 text-center">
           Current Temperature and Humidity
         </h1>
         <div className="flex flex-col xl:flex-row gap-4 mb-8">
