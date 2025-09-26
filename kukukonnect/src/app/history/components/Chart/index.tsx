@@ -55,7 +55,7 @@ export default function HistoryBarChart() {
         setData(getAverage(history, selectedDate));
     }, [history, selectedDate]);
     return (
-        <div className="min-h-screen bg-[#FFFFFF] xl:pl-30">
+        <div className="min-h-screen bg-[#FFFFFF] ">
             <div className="flex-1 p-5 sm:p-">
                 <h1 className="text-3xl  sm:text-4xl lg:text-5xl  font-semibold text-[#084236] text-center mb-6 md:mb-8">Temperature and Humidity History</h1>
                 <div className="flex flex-wrap gap-6 mb-6 pl-7 ">
@@ -97,7 +97,7 @@ export default function HistoryBarChart() {
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="time" />
                                         <YAxis domain={[0, 40]} unit="°C" />
-                                        <Tooltip />
+                                        <Tooltip/>
                                         <Bar dataKey="temperature" fill="#D47F23" />
                                     </BarChart>
                                 </ResponsiveContainer>

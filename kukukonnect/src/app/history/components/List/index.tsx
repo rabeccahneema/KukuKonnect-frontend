@@ -71,7 +71,7 @@ export default function HistoryTable() {
     }, [averages, currentPage, totalPages]);
 
     return (
-        <div className="history-table-container bg-[#FFFFFF] mx-auto flex-1 rounded-xl shadow-lg -mt-3 pr-20">
+        <div className="history-table-container bg-[#FFFFFF] mx-auto flex-1 rounded-xl shadow-lg ">
             {loading && <div className="text-center text-gray-500">Loading history data...</div>}
             {error && <div className="text-center text-red-600">{error}</div>}
 
@@ -102,7 +102,7 @@ export default function HistoryTable() {
                 </table>
             </div>
 
-            <div className="flex justify-center items-center gap-4 mt-6">
+            <div className="flex justify-center items-center gap-4 mt-6 pb-5">
                 <button
                     className="px-4 py-2 rounded bg-[#E5E7EB] text-[#084236] font-semibold shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={currentPage === 1}
