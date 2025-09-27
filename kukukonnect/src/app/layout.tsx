@@ -27,6 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#f59e42" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nunito.className} antialiased`}
       >
