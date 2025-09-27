@@ -1,7 +1,13 @@
-(useForgotPassword as jest.Mock).mockImplementation(() => ({
-  forgotPassword: jest.fn(),
-  loading: false,
+const mockForgotPassword = jest.fn();
+
+jest.mock('../hooks/useForgotPassword', () => ({
+  __esModule: true,
+  default: () => ({
+    forgotPassword: mockForgotPassword,
+    loading: false,
+  }),
 }));
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -11,14 +17,9 @@ jest.mock('next/navigation', () => ({
     back: jest.fn(),
   }),
 }));
+
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ForgotPasswordPage from "./page";
-
-jest.mock("../hooks/useForgotPassword", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-import useForgotPassword from "../hooks/useForgotPassword";
 
 describe("ForgotPasswordPage", () => {
   beforeEach(() => {
@@ -32,27 +33,18 @@ describe("ForgotPasswordPage", () => {
   });
 
   it("shows error if email is empty", async () => {
-    (useForgotPassword as jest.Mock).mockImplementation(() => ({
-      forgotPassword: jest.fn().mockResolvedValue(undefined),
-      loading: false,
-    }));
+    mockForgotPassword.mockResolvedValue(undefined);
     render(<ForgotPasswordPage />);
     fireEvent.click(screen.getByRole("button", { name: /send otp/i }));
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("Sending otp failed"))).toBeInTheDocument();
+      expect(screen.getByText(/sending otp failed/i)).toBeInTheDocument();
     });
   });
 
   it("calls forgotPassword with entered email", async () => {
-    const mockForgotPassword = jest.fn().mockResolvedValue({});
-    (useForgotPassword as jest.Mock).mockImplementation(() => ({
-      forgotPassword: mockForgotPassword,
-      loading: false,
-    }));
+    mockForgotPassword.mockResolvedValue({});
     render(<ForgotPasswordPage />);
-    fireEvent.change(screen.getByLabelText(/email address/i), {
-      target: { value: "test@example.com" },
-    });
+    fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: "test@example.com" } });
     fireEvent.click(screen.getByRole("button", { name: /send otp/i }));
     await waitFor(() => {
       expect(mockForgotPassword).toHaveBeenCalledWith("test@example.com");
@@ -60,48 +52,32 @@ describe("ForgotPasswordPage", () => {
   });
 
   it("shows success message on successful OTP send", async () => {
-    const mockForgotPassword = jest.fn().mockResolvedValue({});
-    (useForgotPassword as jest.Mock).mockImplementation(() => ({
-      forgotPassword: mockForgotPassword,
-      loading: false,
-    }));
+    mockForgotPassword.mockResolvedValue({});
     render(<ForgotPasswordPage />);
-    fireEvent.change(screen.getByLabelText(/email address/i), {
-      target: { value: "test@example.com" },
-    });
+    fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: "test@example.com" } });
     fireEvent.click(screen.getByRole("button", { name: /send otp/i }));
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("OTP sent successfully"))).toBeInTheDocument();
+      expect(screen.getByText(/otp sent successfully/i)).toBeInTheDocument();
     });
   });
 
   it("shows error message if forgotPassword returns error", async () => {
-    const mockForgotPassword = jest.fn().mockResolvedValue({ error: "User with this email does not exist." });
-    (useForgotPassword as jest.Mock).mockImplementation(() => ({
-      forgotPassword: mockForgotPassword,
-      loading: false,
-    }));
+    mockForgotPassword.mockResolvedValue({ error: "User with this email does not exist." });
     render(<ForgotPasswordPage />);
-    fireEvent.change(screen.getByLabelText(/email address/i), {
-      target: { value: "nouser@example.com" },
-    });
+    fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: "nouser@example.com" } });
     fireEvent.click(screen.getByRole("button", { name: /send otp/i }));
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("User with this email does not exist"))).toBeInTheDocument();
+      expect(screen.getByText(/user with this email does not exist/i)).toBeInTheDocument();
     }, { timeout: 10000 });
   });
 
   it("shows error if forgotPassword returns fallback error", async () => {
-    (useForgotPassword as jest.Mock).mockImplementation(() => ({
-      forgotPassword: jest.fn().mockResolvedValue(undefined),
-      loading: false,
-    }));
+    mockForgotPassword.mockResolvedValue(undefined);
     render(<ForgotPasswordPage />);
-    const emailInput = screen.getByLabelText(/email address/i);
-    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: "test@example.com" } });
     fireEvent.click(screen.getByRole("button", { name: /send otp/i }));
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("Sending otp failed"))).toBeInTheDocument();
+      expect(screen.getByText(/sending otp failed/i)).toBeInTheDocument();
     });
   });
 });
