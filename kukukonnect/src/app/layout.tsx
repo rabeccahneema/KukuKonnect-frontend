@@ -1,33 +1,55 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono, Nunito } from "next/font/google";
+const nunito = Nunito({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+});
 import "./globals.css";
-import { Nunito } from "next/font/google";
-const nunito = Nunito({ subsets: ['latin'], weight: ["400", "700", "900"], variable: "--font-nunito" });
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "KukuKonnect",
   description: "KukuKonnect dashboard",
-    generator: "Next.js",
+  generator: "Next.js",
   manifest: "/manifest.json",
   keywords: ["nextjs", "next15", "pwa", "next-pwa"],
-  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#fff" }],
-  viewport:
-    "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
-  icons: [
-  ],
+  icons: [],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport = {
+  themeColor: "#f59e42",
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  shrinkToFit: "no",
+  viewportFit: "cover",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en" className={nunito.variable}>
+    <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#F59E42" />
+        <meta name="theme-color" content="#f59e42" />
       </head>
-      <body className="font-nunito bg-[#F7F9FA]">{children}</body>
-      
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${nunito.className} antialiased`}
+      >
+        {children}
+      </body>
     </html>
-
-
-
   );
 }
