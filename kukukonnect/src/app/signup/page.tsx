@@ -82,7 +82,7 @@ export default function SignUp() {
 
   return (
     <main className={["min-h-screen grid bg-white pt-10", "grid-cols-1 lg:grid-cols-2"].join(" ")}> 
-      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 ml-32">
+      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:ml-32">
         <div className="max-w-xl">
           <div className="-mt-12">
             <h1 className="mt-2 text-5xl sm:text-6xl font-bold leading-tight text-[#1c4f46]">

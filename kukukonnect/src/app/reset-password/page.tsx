@@ -83,7 +83,7 @@ export default function ResetPassword() {
     <main
       className={["min-h-screen grid bg-white", "grid-cols-1 lg:grid-cols-2"].join(" ")}
     >
-      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 ml-32 -mt-10.5">
+      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:ml-32 -mt-10.5">
         <div className="max-w-xl">
           <Logo/>
           <div className="-mt-12">
