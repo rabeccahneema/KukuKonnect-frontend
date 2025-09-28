@@ -92,7 +92,7 @@ export default function AccountSettingsPage() {
 
   return (
     <LayoutComponent>
-      <div className="flex-1 flex flex-col p-12 bg-gray-100 items-center">
+      <div className="flex-1 flex flex-col xl:p-12 bg-gray-100 items-center">
         <h1 className="text-2xl sm:text-4xl lg:text-5xl  font-semibold text-[#084236] self-start  mb-8 ml-[5%]">Account Settings</h1>
         <AccountNav
           activeTab={activeTab}
