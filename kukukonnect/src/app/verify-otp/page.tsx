@@ -91,7 +91,7 @@ export default function OtpVerificationPage() {
 
   return (
     <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white pl-6 sm:pl-10 lg:pl-12 pr-0 py-6 sm:py-10 lg:py-12">
-      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 ml-32">
+      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:ml-32">
         <div className="max-w-xl">
           <div className="mb-8" />
           <Logo />
@@ -146,7 +146,7 @@ export default function OtpVerificationPage() {
         </div>
       </section>
 
-      <section className="relative lg:block bg-[#fbe7d3] h-screen sticky top-0 mt-[-10px] xl:mt-[-50px]">
+      <section className="lg:block bg-[#fbe7d3] h-screen sticky top-0 mt-[-10px] xl:mt-[-50px]">
         <div className="relative w-full h-full">
           <Image
             src="/images/egg.png"
