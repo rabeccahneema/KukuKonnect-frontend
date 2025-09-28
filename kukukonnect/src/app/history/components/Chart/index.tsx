@@ -6,6 +6,7 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import HistoryTable from '../List';
 import { HistoryType } from '../../../hooks/useFetchHistory';
+
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 function getAverage(history: HistoryType[], selectedDate: Date | null) {
     const dayRecords: { [key: string]: { temps: number[]; hums: number[] } } = {};
@@ -57,7 +58,7 @@ export default function HistoryBarChart() {
     return (
         <div className="min-h-screen bg-[#FFFFFF] ">
             <div className="flex-1 p-5 sm:p-">
-                <h1 className="text-3xl  sm:text-4xl lg:text-5xl  font-semibold text-[#084236] text-center mb-6 md:mb-8">Temperature and Humidity History</h1>
+                <h1 className="text-3xl  sm:text-xl lg:text-5xl  font-semibold text-[#084236] text-center mb-6 md:mb-8">Temperature and Humidity History</h1>
                 <div className="flex flex-wrap gap-6 mb-6 pl-7 ">
                     <div className="flex bg-[#E5E7EB] rounded overflow-hidden shadow">
                         <button
@@ -85,13 +86,13 @@ export default function HistoryBarChart() {
                         />
                     </div>
                 </div>
-                <div className="   p-7 pb-4">
+                <div className="   xl:p-7 pb-4">
                     {loading && <div className="text-center text-lg">Loading data...</div>}
                     {error && <div className="text-center text-red-600">{error}</div>}
                     {!loading && !error && view === 'Graph' && (
                         <div className="flex flex-col md:flex-row gap-12 justify-center ">
-                            <div className="flex-1 bg-[#FFFFFF] drop-shadow-lg p-8 ">
-                                <h2 className="text-xl font-medium pb-5 mb-8 text-[#234534]">Temperature</h2>
+                            <div className="flex-1 bg-[#FFFFFF] drop-shadow-lg sm:p-2 xl:p-8 ">
+                                <h2 className="text-xl font-medium pb-5 mb-8 text-center text-[#234534]">Temperature</h2>
                                 <ResponsiveContainer width="100%" height={450}>
                                     <BarChart data={data}>
                                         <CartesianGrid strokeDasharray="3 3" />
@@ -102,8 +103,8 @@ export default function HistoryBarChart() {
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
-                            <div className="flex-1  bg-[#FFFFFF] drop-shadow-lg p-8">
-                                <h2 className="text-xl font-medium pb-5 mb-2 text-[#234534]">Humidity</h2>
+                            <div className="flex-1  bg-[#FFFFFF] drop-shadow-lg sm:p-2 xl:p-8">
+                                <h2 className="text-xl font-medium pb-5 mb-2 text-center text-[#234534]">Humidity</h2>
                                 <ResponsiveContainer width="100%" height={450}>
                                     <BarChart data={data}>
                                         <CartesianGrid strokeDasharray="3 3" />
