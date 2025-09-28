@@ -3,35 +3,24 @@
   "short_name": "KukuKonnect",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#F59E42",
+  "background_color": "#ffffff",
+  "theme_color": "#f59e42",
   "description": "KukuKonnect - Farmer management and authentication platform.",
   "orientation": "any",
-  "categories": ["productivity", "business"],
+  "categories": [
+    "productivity",
+    "business"
+  ],
   "icons": [
     {
-      "src": "/images/Kuku-Logo.png",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
-    {
-      "src": "/images/Kuku-Logo.png",
+      "src": "/images/cropped.jpg",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/images/Kuku-Logo.png",
+      "src": "/images/cropped.jpg",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
-
-
-
-
-
-
-
-
-

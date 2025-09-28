@@ -1,25 +1,42 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono, Nunito } from "next/font/google";
+const nunito = Nunito({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+});
 import "./globals.css";
-import { Nunito } from "next/font/google";
-const nunito = Nunito({ subsets: ['latin'], weight: ["400", "700", "900"], variable: "--font-nunito" });
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "KukuKonnect",
   description: "KukuKonnect dashboard",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en" className={nunito.variable}>
+    <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#F59E42" />
+        <meta name="theme-color" content="#f59e42" />
       </head>
-      <body className="font-nunito bg-[#F7F9FA]">{children}</body>
-      
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${nunito.className} antialiased`}
+      >
+        {children}
+      </body>
     </html>
-
-
-
   );
 }
