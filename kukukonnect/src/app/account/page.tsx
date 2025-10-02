@@ -88,97 +88,89 @@ export default function AccountSettingsPage() {
  const showPasswordTab = user?.user_type === 'Farmer';
 
 
- return (
-  <FarmerLayout>
-   <div className="flex-1 flex flex-col xl:p-12 bg-gray-100 items-center">
-     <h1 className="text-2xl sm:text-4xl lg:text-5xl  font-semibold text-[#084236] self-start  mb-8 ml-[5%]">Account Settings</h1>
+  const LayoutComponent = user?.user_type === 'Agrovet' ? require('../shared-components/AgrovetLayout').default : FarmerLayout;
 
-
-     <AccountNav
-       activeTab={activeTab}
-       setActiveTab={setActiveTab}
-       setShowDeleteConfirm={setShowDeleteConfirm}
-       showPasswordTab={showPasswordTab}
-     />
-
-
-     <div className="flex-grow flex items-center justify-center overflow-y-auto w-[90%]">
-       {loading ? (
-         <div className="text-center text-xl text-[#0B2C27]">Loading...</div>
-       ) : error ? (
-         <div className="text-center text-xl text-red-700">{error}</div>
-       ) : activeTab === 'edit-profile' ? (
-         <ProfileForm
-           user={user}
-           onSave={handleSave}
-           saving={editSaving}
-           error={editError}
-           onSuccess={() => {}}
-         />
-       ) : activeTab === 'change-password' && showPasswordTab ? (
-         <ChangePasswordForm
-           email={user?.email || ""}
-           onCancel={() => setActiveTab('edit-profile')}
-           setPasswordFn={SetPassword}
-           loading={pwdLoading}
-           error={pwdError}
-           onSuccess={() => setShowPwdSuccessPopup(true)}
-         />
-       ) : (
-         <div className="text-center text-xl text-red-700">Access denied</div>
-       )}
-     </div>
-
-
-     <DeleteConfirmationModal
-       show={showDeleteConfirm}
-       onClose={() => setShowDeleteConfirm(false)}
-       onConfirm={handleDeleteAccount}
-       loading={deleteLoading}
-       error={deleteError}
-       success={deleteSuccess}
-     />
-
-
-     {showSuccessPopup && (
-       <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
-         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 1, scale: 1 }}
-           exit={{ opacity: 0, scale: 0.9 }}
-           transition={{ duration: 0.3 }}
-           className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm mx-4"
-         >
-           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-             <CheckCircle className="h-8 w-8 text-green-600" />
-           </div>
-           <h3 className="text-xl font-bold text-[#0B2C27] mb-2">Success!</h3>
-           <p className="text-[#0B2C27]">Profile updated successfully.</p>
-         </motion.div>
-       </div>
-     )}
-
-
-     {showPwdSuccessPopup && (
-       <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
-         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 1, scale: 1 }}
-           exit={{ opacity: 0, scale: 0.9 }}
-           transition={{ duration: 0.3 }}
-           className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm mx-4"
-         >
-           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-             <CheckCircle className="h-8 w-8 text-green-600" />
-           </div>
-           <h3 className="text-xl font-bold text-[#0B2C27] mb-2">Success!</h3>
-           <p className="text-[#0B2C27]">Password changed successfully.</p>
-         </motion.div>
-       </div>
-     )}
-   </div>
-   </FarmerLayout>
- );
+  return (
+    <LayoutComponent>
+      <div className="flex-1 flex flex-col xl:p-12 bg-gray-100 items-center">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl  font-semibold text-[#084236] self-start  mb-8 ml-[5%]">Account Settings</h1>
+        <AccountNav
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          setShowDeleteConfirm={setShowDeleteConfirm}
+          showPasswordTab={showPasswordTab}
+        />
+        <div className="flex-grow flex items-center justify-center overflow-y-auto w-[90%]">
+          {loading ? (
+            <div className="text-center text-xl text-[#0B2C27]">Loading...</div>
+          ) : error ? (
+            <div className="text-center text-xl text-red-700">{error}</div>
+          ) : activeTab === 'edit-profile' ? (
+            <ProfileForm
+              user={user}
+              onSave={handleSave}
+              saving={editSaving}
+              error={editError}
+              onSuccess={() => {}}
+            />
+          ) : activeTab === 'change-password' && showPasswordTab ? (
+            <ChangePasswordForm
+              email={user?.email || ""}
+              onCancel={() => setActiveTab('edit-profile')}
+              setPasswordFn={SetPassword}
+              loading={pwdLoading}
+              error={pwdError}
+              onSuccess={() => setShowPwdSuccessPopup(true)}
+            />
+          ) : (
+            <div className="text-center text-xl text-red-700">Access denied</div>
+          )}
+        </div>
+        <DeleteConfirmationModal
+          show={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDeleteAccount}
+          loading={deleteLoading}
+          error={deleteError}
+          success={deleteSuccess}
+        />
+        {showSuccessPopup && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm mx-4"
+            >
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-[#0B2C27] mb-2">Success!</h3>
+              <p className="text-[#0B2C27]">Profile updated successfully.</p>
+            </motion.div>
+          </div>
+        )}
+        {showPwdSuccessPopup && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm mx-4"
+            >
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-[#0B2C27] mb-2">Success!</h3>
+              <p className="text-[#0B2C27]">Password changed successfully.</p>
+            </motion.div>
+          </div>
+        )}
+      </div>
+    </LayoutComponent>
+  );
 }
 
 
