@@ -1,25 +1,45 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
-const nunito = Nunito({ subsets: ['latin'], weight: ["400", "700", "900"], variable: "--font-nunito" });
+import "./globals.css";
+
+const nunito = Nunito({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-nunito", 
+});
+
+
 
 export const metadata: Metadata = {
   title: "KukuKonnect",
   description: "KukuKonnect dashboard",
+  generator: "Next.js",
+  manifest: "/manifest.json",
+  keywords: ["nextjs", "next15", "pwa", "next-pwa"],
+  icons: [],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  themeColor: "#f59e42",
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: "cover",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en" className={nunito.variable}>
+    <html lang="en">
       <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#F59E42" />
+        
       </head>
-      <body className="font-nunito bg-[#F7F9FA]">{children}</body>
-      
+      <body className={` ${nunito.variable} antialiased`} >
+        {children}
+      </body>
     </html>
-
-
-
   );
 }

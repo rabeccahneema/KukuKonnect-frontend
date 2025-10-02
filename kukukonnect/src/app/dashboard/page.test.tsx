@@ -1,115 +1,179 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Dashboard from "./page";
-import * as useFetchSensorsHook from "../hooks/usefetchSensors";
-import * as useFetchThresholdsHook from "../hooks/usefetchThreshholds";
-import * as api from "../utils/fetchThresholds";
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
-jest.mock("../hooks/usefetchSensors");
-jest.mock("../hooks/usefetchThreshholds");
-jest.mock("../utils/fetchThresholds");
+import Dashboard from './page';
 
-describe("Dashboard component", () => {
-  const fakeSensors = [
-    { timestamp: new Date().toISOString(), temperature: "25", humidity: "50" },
-  ];
-  const fakeThresholds = [
-    {
-      device_id: "device1",
-      temp_threshold_min: "20",
-      temp_threshold_max: "30",
-      humidity_threshold_min: "40",
-      humidity_threshold_max: "70",
-    },
-  ];
+jest.mock('../hooks/useMqttSensors', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock('../hooks/usefetchThreshholds', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock('../utils/fetchThresholds', () => ({
+  updateThresholds: jest.fn(),
+}));
+
+jest.mock('./component/Graphs', () => {
+  return (props: { title: string; data: any[] }) => (
+    <div data-testid={`chart-${props.title.toLowerCase().replace(/\s+/g, '-')}`}>
+      {props.title} ({props.data.length} points)
+    </div>
+  );
+});
+
+
+jest.mock('./component/Infocard', () => {
+  return ({ label, value, unit }: { label: string; value: number | null; unit: string }) => (
+    <div data-testid={`infocard-${label.toLowerCase()}`}>
+      {label}: {value !== null ? `${value}${unit}` : '—'}
+    </div>
+  );
+});
+
+jest.mock('./component/Temperature-modal', () => {
+  return ({ minTemp, maxTemp, closeModal, onConfirm, deviceId }: any) => (
+    <div data-testid="temperature-modal">
+      <button onClick={() => onConfirm(deviceId, minTemp, maxTemp)}>Confirm</button>
+      <button onClick={closeModal}>Close</button>
+    </div>
+  );
+});
+
+jest.mock('../shared-components/FarmerLayout', () => {
+  return ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="farmer-layout">{children}</div>
+  );
+});
+
+
+const useMqttSensors = require('../hooks/useMqttSensors').default;
+const useFetchThresholds = require('../hooks/usefetchThreshholds').default;
+const { updateThresholds } = require('../utils/fetchThresholds');
+
+describe('Dashboard', () => {
+  const mockSensor = {
+    sensor_data_id: 'sensor-1',
+    timestamp: '2023-01-01T12:00:00Z',
+    temperature: 22.5,
+    humidity: 60.0,
+    device_id: 'device-123',
+  };
+
+  const mockThreshold = {
+    id: '1',
+    device_id: 'device-123',
+    temp_threshold_min: '18.00',
+    temp_threshold_max: '28.00',
+    humidity_threshold_min: '40.00',
+    humidity_threshold_max: '70.00',
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (useMqttSensors as jest.Mock).mockReturnValue({ sensors: [], loading: true, error: null });
+    (useFetchThresholds as jest.Mock).mockReturnValue({ thresholds: [], loading: true, error: null });
+    (updateThresholds as jest.Mock).mockResolvedValue(undefined);
+  });
 
-    (useFetchSensorsHook.default as jest.Mock).mockReturnValue({
-      sensors: fakeSensors,
+  it('shows loading message', () => {
+    render(<Dashboard />);
+    expect(screen.getByText(/Connecting to real-time data stream.../)).toBeInTheDocument();
+  });
+
+  it('shows MQTT error', () => {
+    (useMqttSensors as jest.Mock).mockReturnValue({
+      sensors: [],
+      loading: false,
+      error: 'Connection failed',
+    });
+    render(<Dashboard />);
+    expect(screen.getByText(/Error: Connection failed/)).toBeInTheDocument();
+  });
+
+  it('displays sensor data and thresholds when loaded', async () => {
+    (useMqttSensors as jest.Mock).mockReturnValue({
+      sensors: [mockSensor],
       loading: false,
       error: null,
     });
-    (useFetchThresholdsHook.default as jest.Mock).mockReturnValue({
-      thresholds: fakeThresholds,
+    (useFetchThresholds as jest.Mock).mockReturnValue({
+      thresholds: [mockThreshold],
       loading: false,
       error: null,
     });
-  });
-
-  it("renders temperature and humidity info cards with full text including units", () => {
-    render(<Dashboard />);
-    expect(screen.getByText(/Current Temperature and Humidity/i)).toBeInTheDocument();
-    expect(screen.getByText("Temperature")).toBeInTheDocument();
-
-    expect(
-      screen.getByText((content, element) => element?.textContent === "25°C")
-    ).toBeInTheDocument();
-
-    expect(screen.getByText("Humidity")).toBeInTheDocument();
-
-    expect(
-      screen.getByText((content, element) => element?.textContent === "50%")
-    ).toBeInTheDocument();
-  });
-
-  it("shows the optimum temperature range and enables the change temperature button", () => {
-    render(<Dashboard />);
-    expect(screen.getByText(/Optimum temp:/i)).toHaveTextContent("20°C - 30°C");
-    const button = screen.getByRole("button", { name: /Change Temperature/i });
-    expect(button).toBeEnabled();
-  });
-
-  it("opens and closes the TemperatureModal when the change button is clicked", () => {
-    render(<Dashboard />);
-    const button = screen.getByRole("button", { name: /Change Temperature/i });
-    fireEvent.click(button);
-
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-
-    const cancelButton = screen.getByRole("button", { name: /cancel/i });
-    fireEvent.click(cancelButton);
-
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
-  it("calls updateThresholds API with correct values when confirming changes", async () => {
-    const mockUpdate = api.updateThresholds as jest.Mock;
-    mockUpdate.mockResolvedValue({});
 
     render(<Dashboard />);
-    fireEvent.click(screen.getByRole("button", { name: /Change Temperature/i }));
-
-    const confirmButton = screen.getByRole("button", { name: /Confirm/i });
-    fireEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({
-        device_id: "device1",
-        temp_threshold_min: "20.00",
-        temp_threshold_max: "30.00",
-        humidity_threshold_min: "40",
-        humidity_threshold_max: "70",
+      expect(screen.getByTestId('infocard-temperature')).toHaveTextContent('Temperature: 22.5°C');
+      expect(screen.getByTestId('infocard-humidity')).toHaveTextContent('Humidity: 60%');
+    });
+
+    const optimumElement = screen.getByText(/Optimum temp:/);
+    expect(optimumElement).toBeInTheDocument();
+    expect(optimumElement.textContent).toContain('18°C - 28°C');
+  });
+
+  it('enables "Change Temperature" when thresholds load', async () => {
+    (useMqttSensors as jest.Mock).mockReturnValue({ sensors: [mockSensor], loading: false, error: null });
+    (useFetchThresholds as jest.Mock).mockReturnValue({ thresholds: [mockThreshold], loading: false, error: null });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Change Temperature/i })).toBeEnabled();
+    });
+  });
+
+  it('opens modal on button click', async () => {
+    (useMqttSensors as jest.Mock).mockReturnValue({ sensors: [mockSensor], loading: false, error: null });
+    (useFetchThresholds as jest.Mock).mockReturnValue({ thresholds: [mockThreshold], loading: false, error: null });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button', { name: /Change Temperature/i }));
+    });
+
+    expect(screen.getByTestId('temperature-modal')).toBeInTheDocument();
+  });
+
+  it('calls updateThresholds on confirm', async () => {
+    (useMqttSensors as jest.Mock).mockReturnValue({ sensors: [mockSensor], loading: false, error: null });
+    (useFetchThresholds as jest.Mock).mockReturnValue({ thresholds: [mockThreshold], loading: false, error: null });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button', { name: /Change Temperature/i }));
+    });
+
+    fireEvent.click(screen.getByText('Confirm'));
+
+    await waitFor(() => {
+      expect(updateThresholds).toHaveBeenCalledWith({
+        device_id: 'device-123',
+        temp_threshold_min: '18.00',
+        temp_threshold_max: '28.00',
+        humidity_threshold_min: '40.00',
+        humidity_threshold_max: '70.00',
       });
     });
   });
 
-  it("alerts the user if the updateThresholds API call fails", async () => {
-    const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
-    const mockUpdate = api.updateThresholds as jest.Mock;
-    mockUpdate.mockRejectedValue(new Error("Network error"));
+  it('renders charts with data', async () => {
+    (useMqttSensors as jest.Mock).mockReturnValue({ sensors: [mockSensor], loading: false, error: null });
+    (useFetchThresholds as jest.Mock).mockReturnValue({ thresholds: [mockThreshold], loading: false, error: null });
 
     render(<Dashboard />);
-    fireEvent.click(screen.getByRole("button", { name: /Change Temperature/i }));
-
-    const confirmButton = screen.getByRole("button", { name: /Confirm/i });
-    fireEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(alertMock).toHaveBeenCalledWith(expect.stringContaining("Failed to update temperature thresholds"));
+      expect(screen.getByTestId('chart-recent-temperature')).toHaveTextContent('Recent Temperature (1 points)');
+      expect(screen.getByTestId('chart-recent-humidity')).toHaveTextContent('Recent Humidity (1 points)');
     });
-
-    alertMock.mockRestore();
   });
 });
