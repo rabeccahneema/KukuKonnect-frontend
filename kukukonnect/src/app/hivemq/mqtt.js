@@ -35,7 +35,7 @@ const MqttSubscriber = () => {
             humidity: mqttData.avg_humidity,
             device_id: mqttData.device_id,
         };
-        fetch('https://kukukonnect-6aa0bdb81a64.herokuapp.com/api/sensor-data/', {
+        fetch(apiEndpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
