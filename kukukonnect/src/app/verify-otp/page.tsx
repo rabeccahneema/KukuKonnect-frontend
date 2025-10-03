@@ -146,7 +146,7 @@ export default function OtpVerificationPage() {
         </div>
       </section>
 
-      <section className="relative lg:block bg-[#fbe7d3] h-screen sticky top-0 mt-[-10px] xl:mt-[-50px]">
+      <section className="lg:block bg-[#fbe7d3] h-screen sticky top-0 mt-[-10px] xl:mt-[-50px]">
         <div className="relative w-full h-full">
           <Image
             src="/images/egg.png"

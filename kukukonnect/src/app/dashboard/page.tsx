@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from "react";
-import useFetchSensors from "../hooks/usefetchSensors";
+import { useState, useEffect} from "react";
+import useMqttSensors from "../hooks/useMqttSensors"; 
 import useFetchThresholds from "../hooks/usefetchThreshholds";
 import InfoCard from "./component/Infocard";
 import TemperatureModal from "./component/Temperature-modal";
@@ -8,16 +8,13 @@ import ChartsSection from "./component/Graphs";
 import { updateThresholds as updateThresholdsApi } from "../utils/fetchThresholds";
 import FarmerLayout from "../shared-components/FarmerLayout";
 
-
-type TempData = { time: string; temp: number | null };
-type HumidityData = { time: string; hum: number | null };
-
+type TempData = { time: string; temp: number };
+type HumidityData = { time: string; hum: number };
 
 export default function Dashboard() {
-  const { sensors = [], loading, error } = useFetchSensors();
+  const { sensors, loading, error } = useMqttSensors(); 
   const { thresholds = [], loading: thresholdsLoading, error: thresholdsError } = useFetchThresholds();
-  const [tempData, setTempData] = useState<TempData[]>([]);
-  const [humidityData, setHumidityData] = useState<HumidityData[]>([]);
+  
   const [currentTemp, setCurrentTemp] = useState<number | null>(null);
   const [currentHumidity, setCurrentHumidity] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -25,38 +22,40 @@ export default function Dashboard() {
   const [minTemp, setMinTemp] = useState<number | null>(null);
   const [maxTemp, setMaxTemp] = useState<number | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
-  
+  const [tempData, setTempData] = useState<TempData[]>([]);
+  const [humidityData, setHumidityData] = useState<HumidityData[]>([]);
+
   useEffect(() => {
-    const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-    const tempArr: TempData[] = hours.map(hr => {
-      const item = sensors.find(s => {
-        const date = new Date(s.timestamp);
-        return `${date.getHours()}:00` === hr;
-      });
-      return {
-        time: hr,
-        temp: item ? Number(item.temperature) : null
-      };
-    });
-    const humArr: HumidityData[] = hours.map(hr => {
-      const item = sensors.find(s => {
-        const date = new Date(s.timestamp);
-        return `${date.getHours()}:00` === hr;
-      });
-      return {
-        time: hr,
-        hum: item ? Number(item.humidity) : null
-      };
-    });
-    setTempData(tempArr);
-    setHumidityData(humArr);
-    if (sensors.length) {
+    if (sensors.length > 0) {
       const latestSensor = sensors[sensors.length - 1];
       setCurrentTemp(Number(latestSensor.temperature));
       setCurrentHumidity(Number(latestSensor.humidity));
+      const currentTime = new Date();
+      const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const newTempData: TempData = {
+        time: formattedTime,
+        temp: Number(latestSensor.temperature),
+      };
+      setTempData(prevData => {
+        if (prevData.length >= 20) {
+          return [...prevData.slice(1), newTempData];
+        }
+        return [...prevData, newTempData];
+      });
+
+      const newHumidityData: HumidityData = {
+        time: formattedTime,
+        hum: Number(latestSensor.humidity),
+      };
+      setHumidityData(prevData => {
+        if (prevData.length >= 20) {
+          return [...prevData.slice(1), newHumidityData];
+        }
+        return [...prevData, newHumidityData];
+      });
     }
   }, [sensors]);
-
 
   useEffect(() => {
     if (thresholds.length > 0) {
@@ -70,7 +69,6 @@ export default function Dashboard() {
     }
   }, [thresholds]);
 
-
   useEffect(() => {
     if (optimumRange) {
       setMinTemp(optimumRange[0]);
@@ -78,10 +76,8 @@ export default function Dashboard() {
     }
   }, [optimumRange]);
 
-
   const chartHeight = 350;
   const chartBoxMinHeight = "min-h-[340px] xl:min-h-[540px]";
-
 
   async function updateThresholds(deviceId: string, minTemp: number, maxTemp: number) {
     const humidityMin = thresholds[0]?.humidity_threshold_min ?? "40.00";
@@ -95,16 +91,14 @@ export default function Dashboard() {
     });
   }
 
-
   const handleConfirm = async (enteredDeviceId: string, newMinTemp: number, newMaxTemp: number) => {
     try {
       await updateThresholds(enteredDeviceId, newMinTemp, newMaxTemp);
       setOptimumRange([newMinTemp, newMaxTemp]);
     } catch (error: any) {
-      alert(`Failed to update temperature thresholds: ${error.message}`);
+      ;
     }
   };
-
 
   return (
     <FarmerLayout>
@@ -112,6 +106,8 @@ export default function Dashboard() {
         <h1 className="font-semibold mb-10 mt-12 text-xl lg:text-5xl text-[#084236]  leading-7 xl:leading-9 px-2 xl:px-0 text-center">
           Current Temperature and Humidity
         </h1>
+        {loading && <p className="text-center text-gray-500">Connecting to real-time data stream...</p>}
+        {error && <p className="text-center text-red-500">Error: {error}</p>}
         <div className="flex flex-col xl:flex-row gap-4 mb-8">
           <InfoCard label="Temperature" value={currentTemp} unit="°C" />
           <InfoCard label="Humidity" value={currentHumidity} unit="%" />
@@ -132,7 +128,7 @@ export default function Dashboard() {
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <ChartsSection
-            title="Hourly Temperature"
+            title="Recent Temperature"
             data={tempData}
             dataKey="temp"
             yLabel="Temperature (°C)"
@@ -145,7 +141,7 @@ export default function Dashboard() {
             valueFormatter={v => `${v}°C`}
           />
           <ChartsSection
-            title="Hourly Humidity"
+            title="Recent Humidity"
             data={humidityData}
             dataKey="hum"
             yLabel="Humidity (%)"
