@@ -18,8 +18,7 @@ export async function POST(request: Request) {
         password
       }),
     });
-   
-    const result = await response.json();
+   const result = await response.json();
     return new Response(JSON.stringify(result), {
       status: 201,
       statusText: "Password reset successfully",

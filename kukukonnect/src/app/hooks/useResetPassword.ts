@@ -11,14 +11,10 @@ const useResetPassword = () => {
     setError(null);
     try {
       const result = await resetPassword(email, password);
-      if (!result) {
-        setError("Resetting password failed");
-        return null;
-      }
       return result;
     } catch (error) {
       setError((error as Error).message);
-      return null;
+      return { error: (error as Error).message };
     } finally {
       setLoading(false);
     }
@@ -26,6 +22,3 @@ const useResetPassword = () => {
   return { resetPassword: ResetPassword, loading, error };
 };
 export default useResetPassword;
-
-
-

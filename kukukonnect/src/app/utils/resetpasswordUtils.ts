@@ -7,13 +7,18 @@ export async function resetPassword(email:string,password:string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({email,password}),
     });
-    if (!response.ok) {
-      throw new Error("Resetting password failed: " + response.statusText);
+    let result;
+    try {
+      result = await response.json();
+    } catch {
+      result = null;
     }
-    const result = await response.json();
+    if (!response.ok) {
+      return result || { error: response.statusText };
+    }
     return result;
   } catch (error) {
-    throw new Error("Failed to reset password: " + (error as Error).message);
+    return { error: (error as Error).message };
   }
 }
 
