@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         email,
         password
       }),
-    });
+    })
    
     const result = await response.json();
     return new Response(JSON.stringify(result), {

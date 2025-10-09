@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useSetPassword from "../hooks/useSetPassword";
 
-
-
 function Logo() {
   return (
     <div className="flex justify-start -mt-8">
@@ -26,11 +24,14 @@ export default function SetPassword() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirm: ""
+    confirm: "",
   });
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState({ password: false, confirm: false });
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirm: false,
+  });
   const router = useRouter();
   const { SetPassword, loading } = useSetPassword();
 
@@ -38,9 +39,13 @@ export default function SetPassword() {
     const { id, value } = e.target;
     setFormData((prev) => {
       const updated = { ...prev, [id]: value };
-     
+
       if (id === "confirm" || (id === "password" && updated.confirm)) {
-        if (updated.password && updated.confirm && updated.password !== updated.confirm) {
+        if (
+          updated.password &&
+          updated.confirm &&
+          updated.password !== updated.confirm
+        ) {
           setError("Passwords do not match.");
         } else {
           setError(null);
@@ -61,16 +66,28 @@ export default function SetPassword() {
     }
     try {
       const result = await SetPassword(email, password);
-      if (result && !result.error && result.message && result.message.toLowerCase().includes("password")) {
-        setSuccess("Password reset successfully");
+      if (
+        result &&
+        !result.error &&
+        result.message &&
+        result.message.toLowerCase().includes("password")
+      ) {
+        setSuccess(result.message || "Password reset successfully");
         setTimeout(() => {
           router.push("/login");
         }, 1000);
       } else if (result && result.error) {
-        setError(result.error === "Email not found" ? "Email not found. Please check your email or sign up first." : result.error);
+        setError(
+          result.error === "Email not found"
+            ? "Email not found. Please check your email or sign up first."
+            : result.error
+        );
+        setSuccess(null);
+      } else if (result && typeof result === "object") {
+        setError(result.detail || result.error || JSON.stringify(result));
         setSuccess(null);
       } else {
-        setError(result.message || "Set password failed. Please try again.");
+        setError("Set password failed. Please try again.");
         setSuccess(null);
       }
     } catch (err) {
@@ -78,110 +95,132 @@ export default function SetPassword() {
       setError(error.message || "Set password failed. Please try again.");
       setSuccess(null);
     }
-  }
+  };
 
   return (
     <main
-      className={["min-h-screen grid bg-white", "grid-cols-1 lg:grid-cols-2"].join(" ")}
+      className={[
+        "min-h-screen grid bg-white",
+        "grid-cols-1 lg:grid-cols-2",
+      ].join(" ")}
     >
       <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:ml-32 -mt-10.5">
         <div className="max-w-xl">
-          <Logo/>
+          <Logo />
           <div className="-mt-12">
             <h1 className="mt-2 text-5xl sm:text-6xl font-bold leading-tight text-[#1c4f46]">
               Set Password
             </h1>
             <form onSubmit={onSubmit} className="mt-4 space-y-6">
-          
-          
-            <div>
-              <label htmlFor="email" className="block text-base font-semibold text-[#1c4f46]">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                className="mt-2 w-full h-12 rounded-lg border border-[#d89243] px-4 text-[#1c4f46] placeholder:italic placeholder:text-[#1c4f46]/60 focus:outline-none focus:ring-4 focus:ring-[#d89243]/20"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-base font-semibold text-[#1c4f46]">
-                Password
-              </label>
-              <div className="relative mt-2 flex items-center">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
+                  Email Address
+                </label>
                 <input
-                  id="password"
-                  type={showPassword.password ? "text" : "password"}
-                  placeholder="Password"
-                  value={formData.password}
+                  id="email"
+                  type="email"
+                  placeholder="Email Address"
+                  value={formData.email}
                   onChange={handleChange}
-                  className="w-full h-12 rounded-lg border border-[#d89243] px-4 pr-12 text-[#1c4f46] placeholder:italic placeholder:text-[#1c4f46]/60 focus:outline-none focus:ring-4 focus:ring-[#d89243]/20"
+                  className="mt-2 w-full h-12 rounded-lg border border-[#d89243] px-4 text-[#1c4f46] placeholder:italic placeholder:text-[#1c4f46]/60 focus:outline-none focus:ring-4 focus:ring-[#d89243]/20"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => ({ ...s, password: !s.password }))}
-                  className="absolute inset-y-0 right-3 my-auto text-sm text-[#1c4f46]/70 hover:text-[#1c4f46] focus:outline-none"
-                  aria-label={showPassword.password ? "Hide password" : "Show password"}
-                >
-                  {showPassword.password ? "Hide" : "Show"}
-                </button>
               </div>
-              <div className="flex justify-end mt-2"></div>
-            </div>
-            <div>
-              <label htmlFor="confirm" className="block text-base font-semibold text-[#1c4f46]">
-                Confirm password
-              </label>
-              <div className="relative mt-2 flex items-center">
-                <input
-                  id="confirm"
-                  type={showPassword.confirm ? "text" : "password"}
-                  placeholder="Confirm password"
-                  value={formData.confirm}
-                  onChange={handleChange}
-                  className="w-full h-12 rounded-lg border border-[#d89243] px-4 pr-12 text-[#1c4f46] placeholder:italic placeholder:text-[#1c4f46]/60 focus:outline-none focus:ring-4 focus:ring-[#d89243]/20"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => ({ ...s, confirm: !s.confirm }))}
-                  className="absolute inset-y-0 right-3 my-auto text-sm text-[#1c4f46]/70 hover:text-[#1c4f46] focus:outline-none"
-                  aria-label={showPassword.confirm ? "Hide password" : "Show password"}
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-base font-semibold text-[#1c4f46]"
                 >
-                  {showPassword.confirm ? "Hide" : "Show"}
-                </button>
+                  Password
+                </label>
+                <div className="relative mt-2 flex items-center">
+                  <input
+                    id="password"
+                    type={showPassword.password ? "text" : "password"}
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full h-12 rounded-lg border border-[#d89243] px-4 pr-12 text-[#1c4f46] placeholder:italic placeholder:text-[#1c4f46]/60 focus:outline-none focus:ring-4 focus:ring-[#d89243]/20"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword((s) => ({ ...s, password: !s.password }))
+                    }
+                    className="absolute inset-y-0 right-3 my-auto text-sm text-[#1c4f46]/70 hover:text-[#1c4f46] focus:outline-none"
+                    aria-label={
+                      showPassword.password ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword.password ? "Hide" : "Show"}
+                  </button>
+                </div>
+                <div className="flex justify-end mt-2"></div>
               </div>
-              <div className="flex justify-end mt-2"></div>
-            </div>
+              <div>
+                <label
+                  htmlFor="confirm"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
+                  Confirm password
+                </label>
+                <div className="relative mt-2 flex items-center">
+                  <input
+                    id="confirm"
+                    type={showPassword.confirm ? "text" : "password"}
+                    placeholder="Confirm password"
+                    value={formData.confirm}
+                    onChange={handleChange}
+                    className="w-full h-12 rounded-lg border border-[#d89243] px-4 pr-12 text-[#1c4f46] placeholder:italic placeholder:text-[#1c4f46]/60 focus:outline-none focus:ring-4 focus:ring-[#d89243]/20"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword((s) => ({ ...s, confirm: !s.confirm }))
+                    }
+                    className="absolute inset-y-0 right-3 my-auto text-sm text-[#1c4f46]/70 hover:text-[#1c4f46] focus:outline-none"
+                    aria-label={
+                      showPassword.confirm ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword.confirm ? "Hide" : "Show"}
+                  </button>
+                </div>
+                <div className="flex justify-end mt-2"></div>
+              </div>
 
-
-            {error && (
-              <p className="text-sm font-medium text-red-600">{error}</p>
-            )}
-            {success && !error && (
-              <p className="text-sm font-medium text-emerald-700">{success}</p>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full h-14 rounded-lg bg-[#d89243] text-white text-lg font-semibold shadow-[0_6px_18px_rgba(216,146,67,0.25)] transition hover:bg-[#bf7730] hover:shadow-[0_8px_22px_rgba(191,119,48,0.3)] focus:outline-none cursor-pointer focus:ring-4 focus:ring-[#d89243]/30 disabled:opacity-70"
-              aria-label="Set Password"
-            >
-              Set Password
-            </button>
-            <div className="text-sm text-[#1c4f46]/70">
-              <span>Already have an account? </span>
-              <Link href="/login" className="text-[#1c4f46] font-semibold underline-offset-2 hover:underline">
-                Log in
-              </Link>
-            </div>
-          </form>
+              {error && (
+                <p className="text-sm font-medium text-red-600">{error}</p>
+              )}
+              {success && !error && (
+                <p className="text-sm font-medium text-emerald-700">
+                  {success}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-14 rounded-lg bg-[#d89243] text-white text-lg font-semibold shadow-[0_6px_18px_rgba(216,146,67,0.25)] transition hover:bg-[#bf7730] hover:shadow-[0_8px_22px_rgba(191,119,48,0.3)] focus:outline-none cursor-pointer focus:ring-4 focus:ring-[#d89243]/30 disabled:opacity-70"
+                aria-label="Set Password"
+              >
+                Set Password
+              </button>
+              <div className="text-sm text-[#1c4f46]/70">
+                <span>Already have an account? </span>
+                <Link
+                  href="/login"
+                  className="text-[#1c4f46] font-semibold underline-offset-2 hover:underline"
+                >
+                  Log in
+                </Link>
+              </div>
+            </form>
           </div>
         </div>
       </section>

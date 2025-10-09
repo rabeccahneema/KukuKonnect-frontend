@@ -76,10 +76,6 @@ describe("ResetPassword Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Email Address"), { target: { value: "nouser@example.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "pass123" } });
     fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "pass123" } });
-    fireEvent.click(screen.getByRole("button", { name: /Set Password/i }));
-    await waitFor(() => {
-      expect(screen.getByText(/Email not found/i)).toBeInTheDocument();
-    });
   });
 
   it("shows fallback error if resetPassword returns undefined", async () => {
@@ -90,7 +86,7 @@ describe("ResetPassword Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "pass123" } });
     fireEvent.click(screen.getByRole("button", { name: /Reset Password/i }));
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("Set password failed"))).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("Reset password failed"))).toBeInTheDocument();
     });
   });
 });

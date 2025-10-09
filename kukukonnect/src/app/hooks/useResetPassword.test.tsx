@@ -18,7 +18,7 @@ describe("useResetPassword hook", () => {
     const { result } = renderHook(() => useResetPassword());
     let response;
     await act(async () => {
-      response = await result.current.resetPassword("test@example.com", "pass123");
+      response = await result.current.ResetPassword("test@example.com", "pass123");
     });
     expect(response).toEqual({ message: "Password reset successfully" });
     expect(result.current.loading).toBe(false);
@@ -30,7 +30,7 @@ describe("useResetPassword hook", () => {
     const { result } = renderHook(() => useResetPassword());
     let response;
     await act(async () => {
-      response = await result.current.resetPassword("test@example.com", "pass123");
+      response = await result.current.ResetPassword("test@example.com", "pass123");
     });
     expect(response).toBeNull();
     expect(result.current.loading).toBe(false);
@@ -42,7 +42,7 @@ describe("useResetPassword hook", () => {
     const { result } = renderHook(() => useResetPassword());
     let response;
     await act(async () => {
-      response = await result.current.resetPassword("test@example.com", "pass123");
+      response = await result.current.ResetPassword("test@example.com", "pass123");
     });
     expect(response).toBeNull();
     expect(result.current.loading).toBe(false);
