@@ -48,6 +48,6 @@ describe("WelcomeScreen", () => {
   it("navigates to /signup when AgroVet is clicked", () => {
     render(<WelcomeScreen />);
     fireEvent.click(screen.getByRole("button", { name: /AgroVet/i }));
-    expect(mockPush).toHaveBeenCalledWith("/signup");
+    expect(mockPush).toHaveBeenCalledWith("/login");
   });
 });

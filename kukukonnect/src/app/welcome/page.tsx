@@ -40,7 +40,7 @@ export default function WelcomeScreen() {
               Farmer
             </button>
             <button
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push("/login")}
               className="inline-block rounded-lg bg-[#1c4f46] px-8 lg:px-12 xl:px-12 2xl:px-12 py-4 lg:py-5 xl:py-5 2xl:py-5 text-xl lg:text-2xl xl:text-2xl 2xl:text-2xl font-bold text-white shadow-[0_6px_18px_rgba(28,79,70,0.18)] transition hover:bg-[#174037] hover:shadow-[0_8px_22px_rgba(28,79,70,0.25)] active:translate-y-px min-w-[160px] lg:min-w-[180px] xl:min-w-[180px] 2xl:min-w-[180px] cursor-pointer"
             >
               AgroVet

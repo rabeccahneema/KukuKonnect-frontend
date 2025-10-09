@@ -8,7 +8,7 @@ import useRegister from "../hooks/useSignup";
 export default function SignUp() {
   const router = useRouter();
   const { register, loading } = useRegister();
-  
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,17 +18,24 @@ export default function SignUp() {
     password: "",
     confirm: "",
   });
-  
+
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState({ password: false, confirm: false });
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirm: false,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => {
       const updated = { ...prev, [id]: value };
       if (id === "confirm" || (id === "password" && updated.confirm)) {
-        if (updated.password && updated.confirm && updated.password !== updated.confirm) {
+        if (
+          updated.password &&
+          updated.confirm &&
+          updated.password !== updated.confirm
+        ) {
           setError("Passwords do not match.");
         } else {
           setError(null);
@@ -42,14 +49,15 @@ export default function SignUp() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    
-    const { firstName, lastName, username, email, phone, password, confirm } = formData;
-    
+
+    const { firstName, lastName, username, email, phone, password, confirm } =
+      formData;
+
     if (password !== confirm) {
       setError("Passwords do not match.");
       return;
     }
-    
+
     try {
       const result = await register(
         username,
@@ -60,14 +68,21 @@ export default function SignUp() {
         "Agrovet",
         password
       );
-     
-      if (result && result.message && result.message.toLowerCase().includes("successful")) {
+      if (
+        result &&
+        result.message &&
+        result.message.toLowerCase().includes("successful")
+      ) {
         setSuccess(result.message || "Account created successfully.");
         setTimeout(() => {
           router.push("/login");
         }, 1000);
       } else if (result && result.message) {
         setError(result.message);
+        setSuccess(null);
+      } else if (result && typeof result === "object") {
+        setError(result.detail || result.error || JSON.stringify(result))
+        setError(result.detail || result.error || JSON.stringify(result));
         setSuccess(null);
       } else {
         setError("Registration failed. Please try again.");
@@ -81,7 +96,12 @@ export default function SignUp() {
   };
 
   return (
-    <main className={["min-h-screen grid bg-white pt-10", "grid-cols-1 lg:grid-cols-2"].join(" ")}> 
+    <main
+      className={[
+        "min-h-screen grid bg-white pt-10",
+        "grid-cols-1 lg:grid-cols-2",
+      ].join(" ")}
+    >
       <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:ml-32">
         <div className="max-w-xl">
           <div className="-mt-12">
@@ -90,7 +110,10 @@ export default function SignUp() {
             </h1>
             <form onSubmit={onSubmit} className="mt-5 space-y-4.5">
               <div>
-                <label htmlFor="firstName" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="firstName"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   First Name
                 </label>
                 <input
@@ -104,7 +127,10 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="lastName"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   Last Name
                 </label>
                 <input
@@ -118,7 +144,10 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="username" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="username"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   Username
                 </label>
                 <input
@@ -132,7 +161,10 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="email"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   Email Address
                 </label>
                 <input
@@ -146,7 +178,10 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="phone"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   Phone Number
                 </label>
                 <input
@@ -160,7 +195,10 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="password"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   Password
                 </label>
                 <div className="relative mt-2 flex items-center">
@@ -175,9 +213,13 @@ export default function SignUp() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword((s) => ({ ...s, password: !s.password }))}
+                    onClick={() =>
+                      setShowPassword((s) => ({ ...s, password: !s.password }))
+                    }
                     className="absolute inset-y-0 right-3 my-auto text-sm text-[#1c4f46]/70 hover:text-[#1c4f46] focus:outline-none"
-                    aria-label={showPassword.password ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword.password ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword.password ? "Hide" : "Show"}
                   </button>
@@ -185,7 +227,10 @@ export default function SignUp() {
                 <div style={{ minHeight: 10 }}></div>
               </div>
               <div>
-                <label htmlFor="confirm" className="block text-base font-semibold text-[#1c4f46]">
+                <label
+                  htmlFor="confirm"
+                  className="block text-base font-semibold text-[#1c4f46]"
+                >
                   Confirm Password
                 </label>
                 <div className="relative mt-2 flex items-center">
@@ -200,9 +245,13 @@ export default function SignUp() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword((s) => ({ ...s, confirm: !s.confirm }))}
+                    onClick={() =>
+                      setShowPassword((s) => ({ ...s, confirm: !s.confirm }))
+                    }
                     className="absolute inset-y-0 right-3 my-auto text-sm text-[#1c4f46]/70 hover:text-[#1c4f46] focus:outline-none"
-                    aria-label={showPassword.confirm ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword.confirm ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword.confirm ? "Hide" : "Show"}
                   </button>
@@ -213,7 +262,9 @@ export default function SignUp() {
                 <p className="text-sm font-medium text-red-600">{error}</p>
               )}
               {success && !error && (
-                <p className="text-sm font-medium text-emerald-700">{success}</p>
+                <p className="text-sm font-medium text-emerald-700">
+                  {success}
+                </p>
               )}
               <button
                 type="submit"
@@ -224,7 +275,10 @@ export default function SignUp() {
               </button>
               <div className="text-sm text-[#1c4f46]/70">
                 <span>Already have an account? </span>
-                <Link href="/login" className="text-[#1c4f46] font-semibold underline-offset-2 hover:underline">
+                <Link
+                  href="/login"
+                  className="text-[#1c4f46] font-semibold underline-offset-2 hover:underline"
+                >
                   Log in
                 </Link>
               </div>
@@ -232,7 +286,7 @@ export default function SignUp() {
           </div>
         </div>
       </section>
-  <section className="relative hidden lg:block bg-[#fbe7d3] -mt-10">
+      <section className="relative hidden lg:block bg-[#fbe7d3] -mt-10">
         <Image
           src="/images/egg.png"
           alt="Chick on an egg"
