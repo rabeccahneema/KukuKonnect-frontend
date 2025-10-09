@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useResetPassword from "../hooks/useResetPassword";
 
@@ -32,7 +33,7 @@ export default function ResetPassword() {
     confirm: false,
   });
   const router = useRouter();
-  const { resetPassword, loading } = useResetPassword();
+  const { ResetPassword, resetPassword, loading } = useResetPassword();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -64,53 +65,35 @@ export default function ResetPassword() {
       return;
     }
     try {
-      const result = await resetPassword(email, password);
-      const extractMessage = (res: any) => {
-        if (!res) return null;
-        if (typeof res === "string") return res;
-        if (typeof res === "object") {
-          if (res.message) return res.message;
-          if (res.error) return res.error;
-          if (res.detail) return res.detail;
-        
-          const fieldKeys = Object.keys(res).filter(
-            (k) => !["message", "error", "detail"].includes(k)
-          );
-          if (fieldKeys.length) {
-            return fieldKeys
-              .map((k) =>
-                Array.isArray(res[k]) ? res[k].join(" ") : String(res[k])
-              )
-              .join(" ");
-          }
-        }
-        return null;
-      };
-
-      const msg = extractMessage(result);
+      const caller = resetPassword ?? ResetPassword;
+      const result = await caller(email, password);
       if (
         result &&
         !result.error &&
-        msg &&
-        msg.toLowerCase().includes("password")
+        result.message &&
+        result.message.toLowerCase().includes("password")
       ) {
-        setSuccess(msg || "Password reset successfully");
-        setTimeout(() => router.push("/login"), 1000);
-        return;
-      }
-
-      if (msg) {
-        setError(msg);
+        setSuccess(result.message || "Password reset successfully");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
+      } else if (result && result.error) {
+        setError(
+          result.error === "Email not found"
+            ? "Email not found. Please check your email or sign up first."
+            : result.error
+        );
         setSuccess(null);
-        return;
+      } else if (result && typeof result === "object") {
+        setError(result.detail || result.error || JSON.stringify(result));
+        setSuccess(null);
+      } else {
+        setError("Reset password failed. Please try again.");
+        setSuccess(null);
       }
-
-      
-      setError("Set password failed. Please try again.");
-      setSuccess(null);
     } catch (err) {
       const error = err as Error;
-      setError(error.message || "Set password failed. Please try again.");
+      setError(error.message || "Reset password failed. Please try again.");
       setSuccess(null);
     }
   };
@@ -122,7 +105,7 @@ export default function ResetPassword() {
         "grid-cols-1 lg:grid-cols-2",
       ].join(" ")}
     >
-      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 ml-32 -mt-10.5">
+      <section className="relative flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:ml-32 -mt-10.5">
         <div className="max-w-xl">
           <Logo />
           <div className="-mt-12">
@@ -229,7 +212,15 @@ export default function ResetPassword() {
               >
                 Reset Password
               </button>
-              <div className="text-sm text-[#1c4f46]/70"></div>
+              <div className="text-sm text-[#1c4f46]/70">
+                <span>Already have an account? </span>
+                <Link
+                  href="/login"
+                  className="text-[#1c4f46] font-semibold underline-offset-2 hover:underline"
+                >
+                  Log in
+                </Link>
+              </div>
             </form>
           </div>
         </div>

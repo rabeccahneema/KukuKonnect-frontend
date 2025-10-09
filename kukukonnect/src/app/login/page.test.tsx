@@ -58,7 +58,7 @@ describe("Login Component", () => {
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "wrongpass" } });
     fireEvent.click(screen.getByRole("button", { name: /Log In/i }));
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("Login failed"))).toBeInTheDocument();
+      expect(screen.getByText((content) => content.includes("Invalid credentials"))).toBeInTheDocument();
       expect(mockLogin).toHaveBeenCalledWith("test@example.com", "wrongpass");
     }, { timeout: 10000 });
   });
