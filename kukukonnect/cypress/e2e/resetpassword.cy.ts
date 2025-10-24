@@ -7,8 +7,6 @@ describe('Reset Password Page', () => {
    cy.get('input#confirm').should('be.visible');
    cy.get('button[type=submit][aria-label="Reset Password"]').should('exist');
  });
-
-
  it('should validate mismatched passwords', () => {
    cy.visit('/reset-password');
    cy.get('input#email').type('user@example.com');
@@ -17,8 +15,6 @@ describe('Reset Password Page', () => {
    cy.get('button[type=submit]').click();
    cy.contains('Passwords do not match.').should('be.visible');
  });
-
-
  it('should submit and show confirmation on valid data', () => {
    cy.visit('/reset-password');
    cy.intercept('POST', '/api/reset_password', {
@@ -32,8 +28,6 @@ describe('Reset Password Page', () => {
    cy.wait('@resetRequest');
    cy.contains('Password reset successfully').should('be.visible');
  });
-
-
  it('should show API errors', () => {
    cy.visit('/reset-password');
    cy.intercept('POST', '/api/reset_password', {

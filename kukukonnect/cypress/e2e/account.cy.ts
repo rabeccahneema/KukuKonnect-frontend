@@ -75,7 +75,6 @@ describe('Account Page', () => {
       console.log('Body content:', $body.html());
     });
   });
-
   it('Loads the account page and displays tabs', () => {
     cy.get('h1').contains('Account Settings').should('be.visible');
     cy.get('button').contains('Edit Profile').should('be.visible');

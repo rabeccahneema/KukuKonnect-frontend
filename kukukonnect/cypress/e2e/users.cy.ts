@@ -16,6 +16,7 @@ describe('Farmers Page', () => {
       cy.get('button[aria-label="Close modal"]').should('exist');
     });
   });
+  
   it('allows entering farmer details and submitting the form', () => {
     cy.intercept('POST', '/api/users', {
       statusCode: 201,
@@ -83,3 +84,5 @@ describe('Farmers Page', () => {
     cy.wait('@addFarmerLoadingDelayed', { timeout: 15000 });
   });
 });
+
+

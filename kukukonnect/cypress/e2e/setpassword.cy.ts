@@ -48,8 +48,6 @@ describe("Set Password Page", () => {
    );
    cy.url({ timeout: 15000 }).should("include", "/login");
  });
-
-
  it("shows backend error if setting password fails", () => {
    cy.intercept("POST", "/api/set_password", {
      statusCode: 400,

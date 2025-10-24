@@ -5,7 +5,6 @@ Cypress.Commands.add("login", (email, password) => {
   cy.get('input#password').type(password);
   cy.contains("button", "Log In").click();
 });
-
 const user = {
   firstName: "Mary",
   lastName: "Kamau",
@@ -14,7 +13,6 @@ const user = {
   phone: "+254712345678",
   password: "password123",
 };
-
 describe("Full User Flow", () => {
   before(() => {
     cy.viewport(1280, 800); 
@@ -43,8 +41,6 @@ describe("Full User Flow", () => {
       .click();
 
     cy.url({ timeout: 15000 }).should("include", "/login");
-
-
     cy.visit("/");
     cy.contains("button", "AgroVet", { timeout: 20000 }).should("be.visible").click();
     cy.url({ timeout: 15000 }).should("include", "/login");

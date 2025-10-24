@@ -2,8 +2,6 @@ describe("Welcome Screen", () => {
  beforeEach(() => {
    cy.visit("/");  
  });
-
-
  it("renders the welcome page content", () => {
    cy.get("h1").should("contain.text", "Welcome to");
    cy.get('h1 span[class*="text-[#d89243]"]').should("contain.text", "Kuku");
@@ -14,7 +12,6 @@ describe("Welcome Screen", () => {
    cy.contains("button", "AgroVet").should("be.visible");
  });
 
-
  it("clicking Farmer navigates to /set-password", () => {
    cy.contains("button", "Farmer").click();
    cy.url({ timeout: 10000 }).should("include", "/set-password");
@@ -23,8 +20,6 @@ describe("Welcome Screen", () => {
 
  it("clicking AgroVet navigates to /login", () => {
    cy.contains("button", "AgroVet").click();
-
-
    cy.url({ timeout: 10000 }).should("include", "/login");
  });
 });

@@ -72,11 +72,6 @@ describe("Login Page", () => {
      cy.contains("button", "Log In").click();
      cy.get("p.text-red-600").should("contain.text", "Invalid credentials.");
    });
-
-
-  
-
-
 it("enables button and shows error for failed login", () => {
  cy.intercept("POST", "/api/login", {
    statusCode: 401,

@@ -49,7 +49,6 @@ describe('Dashboard Page', () => {
       console.log('Body content:', $body.html());
     });
   });
-
   it('Loads the dashboard page correctly', () => {
     cy.get('h1').contains('Current Temperature and Humidity').should('be.visible');
     cy.get('div.bg-white.shadow-xl.rounded-xl').should('have.length', 3);
@@ -74,7 +73,6 @@ describe('Dashboard Page', () => {
       cy.get('h2').contains('Recent Humidity').should('be.visible');
     });
   });
-
   it('Cancels TemperatureModal without changes', () => {
     cy.get('div.bg-white.shadow-xl.rounded-xl').eq(2).within(() => {
       cy.get('button').contains('Change Temperature').click();

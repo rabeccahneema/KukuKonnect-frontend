@@ -107,11 +107,7 @@ describe("Sign Up Page", () => {
    cy.get('input[id="phone"]').type(user.phone);
    cy.get('input[id="password"]').type(user.password);
    cy.get('input[id="confirm"]').type(user.password);
-
-
    cy.get("form").submit();
-
-
    cy.wait(500); 
    cy.get("@register.all").should("have.length", 1); 
  });

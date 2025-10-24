@@ -29,7 +29,6 @@ describe('History Page', () => {
       failOnStatusCode: false,
     });
   });
-
   it('Loads the history page and displays title', () => {
     cy.get('h1', { timeout: 10_000 })
       .should('be.visible')
@@ -50,7 +49,6 @@ describe('History Page', () => {
     cy.contains('button', 'List')
       .should('not.have.class', 'bg-[#D2914A]')
       .and('not.have.class', 'bg-orange-500');
-
     cy.contains('h2', 'Temperature').should('be.visible');
     cy.contains('Temperature (°C)').should('be.visible');
     cy.contains('Week Days').should('be.visible');
